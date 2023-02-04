@@ -13,14 +13,18 @@ export class ThemeService {
 
   constructor(@Inject(DOCUMENT) private document: Document) {
     this.activeTheme$ = new BehaviorSubject(this.getThemeOrDefault());
-    this.activeTheme$.subscribe((theme) => this.switchTheme(theme));
+    this.activeTheme$.subscribe((theme) => this.setTheme(theme));
   }
 
-  switchTheme(theme: Theme) {
-    const themeLink = this.document.getElementById(
-      'app-theme'
-    ) as HTMLLinkElement;
-    themeLink.href = theme;
+  switchTheme() {
+    let theme = this.getThemeOrDefault();
+    if (theme === Theme.Light) {
+      theme = Theme.Dark;
+    }else{
+      theme = Theme.Light
+    }
+    this.activeTheme$.next(theme);
+    localStorage.setItem(THEME_KEY, theme);
   }
 
   getThemeOrDefault(): Theme {
@@ -32,7 +36,10 @@ export class ThemeService {
   }
 
   setTheme(theme: Theme) {
-    this.activeTheme$.next(theme);
-    localStorage.setItem(THEME_KEY, theme);
+    const themeLink = this.document.getElementById(
+      'app-theme'
+    ) as HTMLLinkElement;
+    themeLink.href = theme;
+
   }
 }
