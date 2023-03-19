@@ -8,49 +8,47 @@ using PWAConverter.Services;
 
 namespace PWAConverter.Controllers
 {
-    public class UserController
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
     {
-        [Authorize]
-        [ApiController]
-        [Route("[controller]")]
-        public class UsersController : ControllerBase
+        private IUserService _userService;
+        private IMapper _mapper;
+        private readonly AppSettings _appSettings;
+
+        public UserController(
+            IUserService userService,
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
-            private IUserService _userService;
-            private IMapper _mapper;
-            private readonly AppSettings _appSettings;
+            _userService = userService;
+            _mapper = mapper;
+            _appSettings = appSettings.Value;
+        }
 
-            public UsersController(
-                IUserService userService,
-                IMapper mapper,
-                IOptions<AppSettings> appSettings)
-            {
-                _userService = userService;
-                _mapper = mapper;
-                _appSettings = appSettings.Value;
-            }
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(AuthenticateRequest model)
+        {
+            var response = _userService.Authenticate(model);
+            return Ok(response);
+        }
 
-            [AllowAnonymous]
-            [HttpPost("authenticate")]
-            public IActionResult Authenticate(AuthenticateRequest model)
-            {
-                var response = _userService.Authenticate(model);
-                return Ok(response);
-            }
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public IActionResult Register(RegisterRequest model)
+        {
+            _userService.Register(model);
+            return Ok(new { message = "Registration successful" });
+        }
 
-            [AllowAnonymous]
-            [HttpPost("register")]
-            public IActionResult Register(RegisterRequest model)
-            {
-                _userService.Register(model);
-                return Ok(new { message = "Registration successful" });
-            }
-
-            [HttpGet]
-            public IActionResult GetAll()
-            {
-                var users = _userService.GetAll();
-                return Ok(users);
-            }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var users = _userService.GetAll();
+            return Ok(users);
+        }
 
             [HttpGet("{id}")]
             public IActionResult GetById(Guid id)
