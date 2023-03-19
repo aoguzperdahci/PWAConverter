@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public string Url { get; set; }
-        public enum Method { HttpGet, HttpPost, HttpPut };
+        public Method Method { get; set; }
         public Project Project { get; set; }
     }
 }
