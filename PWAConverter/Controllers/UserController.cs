@@ -53,17 +53,23 @@ namespace PWAConverter.Controllers
             }
 
             [HttpGet("{id}")]
-            public IActionResult GetById(int id)
+            public IActionResult GetById(Guid id)
             {
                 var user = _userService.GetById(id);
                 return Ok(user);
             }
 
             [HttpDelete("{id}")]
-            public IActionResult Delete(int id)
+            public IActionResult Delete(Guid id)
             {
                 _userService.Delete(id);
                 return Ok(new { message = "User deleted successfully" });
+            }
+            [HttpPut("{id}")]
+            public IActionResult Update(Guid id, UpdateRequest model)
+            {
+                _userService.Update(id, model);
+                return Ok(new { message = "User updated successfully" });
             }
         }
     }

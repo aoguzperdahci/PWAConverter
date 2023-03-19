@@ -14,7 +14,7 @@ namespace PWAConverter.Helpers
             // RegisterRequest -> User
             CreateMap<RegisterRequest, User>();
 
-            /*
+            
             // UpdateRequest -> User
             CreateMap<UpdateRequest, User>()
                 .ForAllMembers(x => x.Condition(
@@ -26,7 +26,7 @@ namespace PWAConverter.Helpers
 
                         return true;
                     }
-                ));*/
+                ));
         }
     }
 }

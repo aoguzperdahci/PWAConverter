@@ -28,7 +28,7 @@ namespace PWAConverter.Services
             return response;
         }
 
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var user = GetUser(id);
             _dataContext.Users.Remove(user);
@@ -40,7 +40,7 @@ namespace PWAConverter.Services
             return _dataContext.Users;
         }
 
-        public User GetById(int id)
+        public User GetById(Guid id)
         {
             return GetUser(id);
         }
@@ -62,11 +62,31 @@ namespace PWAConverter.Services
             _dataContext.Users.Add(user);
             _dataContext.SaveChanges();
         }
-        private User GetUser(int id)
+        private User GetUser(Guid id)
         {
             var user = _dataContext.Users.Find(id);
             if (user == null) throw new KeyNotFoundException("User not found");
             return user;
         }
+        public void Update(Guid id, UpdateRequest model)
+        {
+            var user = GetUser(id);
+
+            // validate
+            if (model.Email != user.Email && _dataContext.Users.Any(x => x.Email == model.Email))
+                throw new AppException("Email is not valid.");
+
+            // hash password if it was entered
+            if (!string.IsNullOrEmpty(model.Password))
+                user.PasswordSalt = BCrypt.Net.BCrypt.GenerateSalt();
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password,user.PasswordSalt);
+
+            // copy model to user and save
+            _mapper.Map(model, user);
+            _dataContext.Users.Update(user);
+            _dataContext.SaveChanges();
+        }
+
+      
     }
 }

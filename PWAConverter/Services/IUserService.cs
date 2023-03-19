@@ -7,8 +7,9 @@ namespace PWAConverter.Services
     {
         AuthenticateResponse Authenticate(AuthenticateRequest model);
         IEnumerable<User> GetAll();
-        User GetById(int id);
+        User GetById(Guid id);
         void Register(RegisterRequest model);
-        void Delete(int id);
+        void Delete(Guid id);
+        void Update(Guid id, UpdateRequest model);
     }
 }
