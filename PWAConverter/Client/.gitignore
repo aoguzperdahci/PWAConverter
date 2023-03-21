@@ -44,4 +44,5 @@ Thumbs.db
 .angular/
 
 # Generated files
-openApi.yaml
+OpenApiConfig.yaml
+OpenApiClient.ts

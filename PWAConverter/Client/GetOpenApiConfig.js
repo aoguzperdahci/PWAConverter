@@ -13,7 +13,7 @@ https
 
     // The whole response has been received. Print out the result.
     resp.on("end", () => {
-      fs.writeFile("./openApi.yaml", data, function (err) {
+      fs.writeFile("./OpenApiConfig.yaml", data, function (err) {
         if (err) {
           return console.log(err);
         }
