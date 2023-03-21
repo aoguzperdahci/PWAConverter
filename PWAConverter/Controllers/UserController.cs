@@ -26,8 +26,14 @@ namespace PWAConverter.Controllers
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
+            [HttpGet]
+            public IActionResult GetMe()
+            {
+                var userName = _userService.GetMyId();
+                return Ok(userName);
+            }
 
-        [AllowAnonymous]
+            [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequest model)
         {
@@ -71,4 +77,4 @@ namespace PWAConverter.Controllers
             }
         }
     }
-}
+
