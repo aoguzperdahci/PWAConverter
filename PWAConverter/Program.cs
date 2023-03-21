@@ -9,35 +9,29 @@ using PWAConverter.Data;
 using PWAConverter.Helpers;
 using PWAConverter.Services;
 using System.Text;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 // Add services to the container.
 
 services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(options =>
+services.AddOpenApiDocument(options =>
 {
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    options.Title = "PWA Converter";
+    options.DocumentName = "pwa-converter";
+    options.OperationProcessors.Add(new OperationSecurityScopeProcessor("auth"));
+    options.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT Token"));
+    options.DocumentProcessors.Add(new SecurityDefinitionAppender("auth", new NSwag.OpenApiSecurityScheme
     {
-        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
-
- 
+        Type = OpenApiSecuritySchemeType.Http,
+        In = OpenApiSecurityApiKeyLocation.Header,
+        Scheme = "bearer",
+        BearerFormat = "jwt"
+    }));
 });
-
-
-services.AddDbContext<PWAConverterContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-
-// configure automapper with all automapper profiles from this assembly
-services.AddAutoMapper(typeof(Program));
-
-// configure strongly typed settings object
 
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -48,10 +42,20 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
                 .GetBytes(builder.Configuration.GetSection("Secret:Key").Value)),
             ValidateIssuer = false,
-            ValidateLifetime= true,
+            ValidateLifetime = true,
             ValidateAudience = false
         };
     });
+
+services.AddDbContext<PWAConverterContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+// configure automapper with all automapper profiles from this assembly
+services.AddAutoMapper(typeof(Program));
+
+// configure strongly typed settings object
+
+
 builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
     policy =>
     {
@@ -67,8 +71,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi(options =>
+    {
+        //options.PostProcess = (document, request) =>
+        //{
+        //    document.Servers.Clear();
+        //    document.Servers.Add(new OpenApiServer { Url = serverUrl });
+        //};
+        options.Path = "v1/openapi/pwa-converter.yaml";
+        options.DocumentName = "pwa-converter";
+    });
+
+    app.UseSwaggerUi3(options =>
+    {
+        options.Path = "/openapi";
+        options.DocumentPath = "/v1/openapi/pwa-converter.yaml";
+    });
 }
 app.UseCors("NgOrigins");
 

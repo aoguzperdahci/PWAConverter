@@ -14,7 +14,7 @@ namespace PWAConverter.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _userService;
-    
+
         public UserController(IUserService userService)
         {
             _userService = userService;
@@ -28,11 +28,11 @@ namespace PWAConverter.Controllers
             return Ok(response);
         }
 
-      
+
         [HttpPost("validate")]
         public IActionResult Validate(string token)
         {
-             _userService.Validate(token);
+            _userService.Validate(token);
             return Ok();
         }
 
@@ -43,7 +43,7 @@ namespace PWAConverter.Controllers
             _userService.Register(model);
             return Ok(new { message = "Registration successful" });
         }
-        
+
         [HttpGet("getAll")]
         public IActionResult GetAll()
         {
@@ -51,25 +51,26 @@ namespace PWAConverter.Controllers
             return Ok(users);
         }
 
-            [HttpGet("{id}")]
-            public IActionResult GetById(Guid id)
-            {
-                var user = _userService.GetById(id);
-                return Ok(user);
-            }
+        [HttpGet("{id}")]
+        public IActionResult GetById(Guid id)
+        {
+            var user = _userService.GetById(id);
+            return Ok(user);
+        }
 
-            [HttpDelete]
-            public IActionResult Delete()
-            {   
-                _userService.Delete();
-                return Ok(new { message = "User deleted successfully" });
-            }
-            [HttpPut]
-            public IActionResult Update(UpdateRequest model)
-            {
-                _userService.Update(model);
-                return Ok(new { message = "User updated successfully" });
-            }
+        [HttpDelete]
+        public IActionResult Delete()
+        {
+            _userService.Delete();
+            return Ok(new { message = "User deleted successfully" });
+        }
+
+        [HttpPut]
+        public IActionResult Update(UpdateRequest model)
+        {
+            _userService.Update(model);
+            return Ok(new { message = "User updated successfully" });
         }
     }
+}
 
