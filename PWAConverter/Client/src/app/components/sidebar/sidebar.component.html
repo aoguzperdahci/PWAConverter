@@ -1,0 +1,100 @@
+<div class="sidebar" [ngClass]="{'close' : !sidebarToggle}">
+
+  <div class="logo-details mt-1">
+    <img style="width: 70px;" class="ml-1 cursor-pointer" alt="logo" routerLink="/"
+      [src]="(isActiveThemeLight$ | async) ? 'assets/logo/logo-light.svg' : 'assets/logo/logo-dark.svg' " />
+    <span class="logo-name ml-1 text-primary">Converter</span>
+  </div>
+
+  <button pButton type="button" [icon]="sidebarToggle ? 'pi pi-chevron-left':'pi pi-chevron-right'"
+    class="p-button-rounded toggle-button" (click)="toggleSidebar()"
+    [ngClass]="{'toggle-button-close': !sidebarToggle}"></button>
+
+  <ul class="nav-links">
+
+    <li>
+      <a routerLink="/">
+        <i class="material-symbols-rounded">home</i>
+        <span class="link-name">Home</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link-name" routerLink="/">Home</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <a routerLink="projects">
+        <i class="material-symbols-rounded">dashboard</i>
+        <span class="link-name">Projects</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link-name" routerLink="/projects">Projects</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <a routerLink="profile">
+        <i class="material-symbols-rounded">person</i>
+        <span class="link-name">Profile</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link-name" routerLink="/profile">Profile</a></li>
+      </ul>
+    </li>
+
+    <li class="logout">
+      <a routerLink="/">
+        <i class="material-symbols-rounded">logout</i>
+        <span class="link-name">Log out</span>
+      </a>
+      <ul class="sub-menu blank bg-red-500">
+        <li><a class="link-name bg-red-500" routerLink="/">Log out</a></li>
+      </ul>
+    </li>
+
+    <li class="mt-8 signup">
+      <a routerLink="signup">
+        <i class="material-symbols-rounded signup">add_box</i>
+        <span class="link-name signup">Sign up</span>
+      </a>
+      <ul class="sub-menu blank signup">
+        <li><a class="link-name signup" routerLink="/signup">Sign up</a></li>
+      </ul>
+    </li>
+
+
+    <li class="login">
+      <a routerLink="login">
+        <i class="material-symbols-rounded login">login</i>
+        <span class="link-name login">Log in</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link-name login" routerLink="/login">Log in</a></li>
+      </ul>
+    </li>
+
+    <!-- <li class="showMenu">
+        <div class="iocn-link">
+          <a href="#" >
+            <i class='bx bx-book-alt' ></i>
+            <span class="link-name">Posts</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow' ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link-name" href="#">Posts</a></li>
+          <li><a href="#">Web Design</a></li>
+          <li><a href="#">Login Form</a></li>
+          <li><a href="#">Card Design</a></li>
+        </ul>
+      </li> -->
+
+
+  </ul>
+
+  <button pButton class="p-button-rounded p-button-outlined text-color ml-1 fixed bottom-0 mb-2"
+    (click)="switchTheme()">
+    <i class="material-symbols-rounded">dark_mode</i>
+  </button>
+
+</div>

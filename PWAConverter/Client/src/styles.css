@@ -1,8 +1,19 @@
 body {
   font-size: 18px;
-  margin: 0px;
 }
 
 * {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.material-symbols-rounded{
+  align-self: center;
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
 }
