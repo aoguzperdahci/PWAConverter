@@ -86,13 +86,13 @@
   align-items: center;
   text-decoration: none;
 }
-.sidebar .nav-links li a .link_name{
+.sidebar .nav-links li a .link-name{
   font-size: 18px;
   font-weight: 400;
   color: var(--text-color);
   transition: all 0.4s ease;
 }
-.sidebar .nav-links li:hover a .link_name{
+.sidebar .nav-links li:hover a .link-name{
   font-size: 18px;
   font-weight: 400;
   color: var(--primary-color-text);
@@ -104,7 +104,7 @@
   transition: all 0.4s ease;
 }
 
-.sidebar.close .nav-links li a .link_name{
+.sidebar.close .nav-links li a .link-name{
   opacity: 0;
   pointer-events: none;
 }
@@ -147,10 +147,10 @@
   pointer-events: auto;
   transition: all 0.4s ease;
 }
-.sidebar .nav-links li .sub-menu .link_name{
+.sidebar .nav-links li .sub-menu .link-name{
   display: none;
 }
-.sidebar.close .nav-links li .sub-menu .link_name{
+.sidebar.close .nav-links li .sub-menu .link-name{
   font-size: 18px;
   opacity: 1;
   display: block;
