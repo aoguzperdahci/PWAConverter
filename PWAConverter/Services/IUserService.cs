@@ -9,8 +9,8 @@ namespace PWAConverter.Services
         IEnumerable<User> GetAll();
         User GetById(Guid id);
         void Register(RegisterRequest model);
-        void Delete(Guid id);
-        void Update(Guid id, UpdateRequest model);
-        string GetMyId();
+        void Delete();
+        void Update(UpdateRequest model);
+        Guid GetMyId();
     }
 }

@@ -8,7 +8,7 @@ using PWAConverter.Services;
 
 namespace PWAConverter.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -26,14 +26,8 @@ namespace PWAConverter.Controllers
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
-            [HttpGet]
-            public IActionResult GetMe()
-            {
-                var userName = _userService.GetMyId();
-                return Ok(userName);
-            }
 
-            [AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequest model)
         {
@@ -48,8 +42,8 @@ namespace PWAConverter.Controllers
             _userService.Register(model);
             return Ok(new { message = "Registration successful" });
         }
-
-        [HttpGet]
+        
+        [HttpGet("getAll")]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
@@ -63,16 +57,16 @@ namespace PWAConverter.Controllers
                 return Ok(user);
             }
 
-            [HttpDelete("{id}")]
-            public IActionResult Delete(Guid id)
-            {
-                _userService.Delete(id);
+            [HttpDelete,Authorize]
+            public IActionResult Delete()
+            {   
+                _userService.Delete();
                 return Ok(new { message = "User deleted successfully" });
             }
-            [HttpPut("{id}")]
-            public IActionResult Update(Guid id, UpdateRequest model)
+            [HttpPut,Authorize]
+            public IActionResult Update(UpdateRequest model)
             {
-                _userService.Update(id, model);
+                _userService.Update(model);
                 return Ok(new { message = "User updated successfully" });
             }
         }

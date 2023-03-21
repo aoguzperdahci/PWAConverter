@@ -7,6 +7,7 @@ using PWAConverter.Models.User;
 using BCrypt.Net;
 using PWAConverter.Helpers;
 using System.Security.Claims;
+using System.Dynamic;
 
 namespace PWAConverter.Services
 {
@@ -25,14 +26,14 @@ namespace PWAConverter.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string GetMyId()
+        public Guid GetMyId()
         {
             var result = string.Empty;
             if (_httpContextAccessor.HttpContext != null)
             {
                 result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            return result;
+            return Guid.Parse(result);
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
@@ -49,8 +50,9 @@ namespace PWAConverter.Services
             return response;
         }
 
-        public void Delete(Guid id)
+        public void Delete()
         {
+            Guid id = GetMyId();
             var user = GetUser(id);
             _dataContext.Users.Remove(user);
             _dataContext.SaveChanges();
@@ -92,18 +94,19 @@ namespace PWAConverter.Services
             if (user == null) throw new KeyNotFoundException("User not found");
             return user;
         }
-        public void Update(Guid id, UpdateRequest model)
+        public void Update(UpdateRequest model)
         {
+            Guid id = GetMyId();
             var user = GetUser(id);
-
-            // validate
-            if (model.Email != user.Email && _dataContext.Users.Any(x => x.Email == model.Email))
-                throw new AppException("Email is not valid.");
+           
+            // validate old password and mail
+            if (model.Email != user.Email || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+                throw new AppException("Email or password is not correct.");
 
             // hash password if it was entered
-            if (!string.IsNullOrEmpty(model.Password))
+            if (!string.IsNullOrEmpty(model.NewPassword))
                 user.PasswordSalt = BCrypt.Net.BCrypt.GenerateSalt();
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password,user.PasswordSalt);
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword,user.PasswordSalt);
 
             // copy model to user and save
             _mapper.Map(model, user);
