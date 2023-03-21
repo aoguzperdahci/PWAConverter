@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PWAConverter.Data;
 
@@ -11,9 +12,10 @@ using PWAConverter.Data;
 namespace PWAConverter.Migrations
 {
     [DbContext(typeof(PWAConverterContext))]
-    partial class PWAConverterContextModelSnapshot : ModelSnapshot
+    [Migration("20230320105543_Update_Enums")]
+    partial class Update_Enums
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

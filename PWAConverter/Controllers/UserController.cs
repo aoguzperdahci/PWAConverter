@@ -14,17 +14,10 @@ namespace PWAConverter.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _userService;
-        private IMapper _mapper;
-        private readonly AppSettings _appSettings;
 
-        public UserController(
-            IUserService userService,
-            IMapper mapper,
-            IOptions<AppSettings> appSettings)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _mapper = mapper;
-            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
@@ -35,6 +28,14 @@ namespace PWAConverter.Controllers
             return Ok(response);
         }
 
+
+        [HttpPost("validate")]
+        public IActionResult Validate(string token)
+        {
+            _userService.Validate(token);
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register(RegisterRequest model)
@@ -43,32 +44,33 @@ namespace PWAConverter.Controllers
             return Ok(new { message = "Registration successful" });
         }
 
-        [HttpGet]
+        [HttpGet("getAll")]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
             return Ok(users);
         }
 
-            [HttpGet("{id}")]
-            public IActionResult GetById(Guid id)
-            {
-                var user = _userService.GetById(id);
-                return Ok(user);
-            }
+        [HttpGet("{id}")]
+        public IActionResult GetById(Guid id)
+        {
+            var user = _userService.GetById(id);
+            return Ok(user);
+        }
 
-            [HttpDelete("{id}")]
-            public IActionResult Delete(Guid id)
-            {
-                _userService.Delete(id);
-                return Ok(new { message = "User deleted successfully" });
-            }
-            [HttpPut("{id}")]
-            public IActionResult Update(Guid id, UpdateRequest model)
-            {
-                _userService.Update(id, model);
-                return Ok(new { message = "User updated successfully" });
-            }
+        [HttpDelete]
+        public IActionResult Delete()
+        {
+            _userService.Delete();
+            return Ok(new { message = "User deleted successfully" });
+        }
+
+        [HttpPut]
+        public IActionResult Update(UpdateRequest model)
+        {
+            _userService.Update(model);
+            return Ok(new { message = "User updated successfully" });
         }
     }
 }
+
