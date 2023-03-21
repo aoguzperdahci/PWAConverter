@@ -3,12 +3,16 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "npm run getOpenApiConfig && npm run generateOpenApiClient",
     "start": "ng serve --open",
+    "prebuild": "npm run getOpenApiConfig && npm run generateOpenApiClient",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "getOpenOpiConfig": "node openApi.js"
+    "nswag": "nswag",
+    "getOpenApiConfig": "node GetOpenApiConfig.js",
+    "generateOpenApiClient": "nswag run /variables:SchemaFile=OpenApiConfig.yaml,Output=./src/OpenApiClient.ts version /runtime:Net60"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +50,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
+    "nswag": "^13.18.2",
     "typescript": "~4.9.4"
   }
 }
