@@ -8,23 +8,16 @@ using PWAConverter.Services;
 
 namespace PWAConverter.Controllers
 {
-    
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private IUserService _userService;
-        private IMapper _mapper;
-        private readonly AppSettings _appSettings;
-
-        public UserController(
-            IUserService userService,
-            IMapper mapper,
-            IOptions<AppSettings> appSettings)
+    
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _mapper = mapper;
-            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
@@ -33,6 +26,14 @@ namespace PWAConverter.Controllers
         {
             var response = _userService.Authenticate(model);
             return Ok(response);
+        }
+
+      
+        [HttpPost("validate")]
+        public IActionResult Validate(string token)
+        {
+             _userService.Validate(token);
+            return Ok();
         }
 
         [AllowAnonymous]
@@ -57,13 +58,13 @@ namespace PWAConverter.Controllers
                 return Ok(user);
             }
 
-            [HttpDelete,Authorize]
+            [HttpDelete]
             public IActionResult Delete()
             {   
                 _userService.Delete();
                 return Ok(new { message = "User deleted successfully" });
             }
-            [HttpPut,Authorize]
+            [HttpPut]
             public IActionResult Update(UpdateRequest model)
             {
                 _userService.Update(model);

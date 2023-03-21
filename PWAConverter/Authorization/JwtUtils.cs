@@ -11,19 +11,16 @@ namespace PWAConverter.Authorization
 {
     public interface IJwtUtils
     {
-        public string GenerateToken(User user);
-        public Guid? ValidateToken(string token);
+        public bool ValidateToken(string token);
         public string CreateToken(User user);
     }
 
     public class JwtUtils : IJwtUtils
     {
-        private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
 
-        public JwtUtils(IOptions<AppSettings> appSettings, IConfiguration configuration)
+        public JwtUtils(IConfiguration configuration)
         {
-            _appSettings = appSettings.Value;
             _configuration = configuration;
         }
         public string CreateToken(User user)
@@ -34,72 +31,51 @@ namespace PWAConverter.Authorization
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value));
+                _configuration.GetSection("Secret:Key").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: creds);
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
-        }
-        public string GenerateToken(User user)
-        {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-
-            };
-            
-
-            // generate token that is valid for 7 days
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var token = new JwtSecurityToken(
+                
                 claims: claims,
                 expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds);
+
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
             return jwt;
         }
 
-        public Guid? ValidateToken(string token)
+        public bool ValidateToken(string token)
         {
             if (token == null)
-                return null;
+                return false;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("Secret:Key").Value));
             try
             {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = key,
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime= true, 
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
-
-                // return user id from JWT token if validation successful
-                return userId;
+                
+                // return true if validation successful
+                return true;
             }
             catch
             {
                 // return null if validation fails
-                return null;
+                return false;
             }
         }
     }

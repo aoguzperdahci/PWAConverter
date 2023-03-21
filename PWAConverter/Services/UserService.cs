@@ -36,7 +36,7 @@ namespace PWAConverter.Services
             return Guid.Parse(result);
         }
 
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        public string Authenticate(AuthenticateRequest model)
         {
             var user = _dataContext.Users.SingleOrDefault(x => x.Email == model.Email);
 
@@ -47,9 +47,13 @@ namespace PWAConverter.Services
             // authentication successful
             var response = _mapper.Map<AuthenticateResponse>(user);
             response.Token = _jwtUtils.CreateToken(user);
-            return response;
+            return response.Token;
         }
 
+        public void Validate(string token)
+        {
+            _jwtUtils.ValidateToken(token);
+        }
         public void Delete()
         {
             Guid id = GetMyId();
