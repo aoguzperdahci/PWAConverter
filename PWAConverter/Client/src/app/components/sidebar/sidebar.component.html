@@ -10,68 +10,70 @@
     class="p-button-rounded toggle-button" (click)="toggleSidebar()"
     [ngClass]="{'toggle-button-close': !sidebarToggle}"></button>
 
-  <ul class="nav-links">
+  <ul class="nav-links flex align-content-between flex-wrap">
+    <div class="w-full">
+      <li>
+        <a routerLink="/">
+          <i class="material-symbols-rounded">home</i>
+          <span class="link-name">Home</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link-name" routerLink="/">Home</a></li>
+        </ul>
+      </li>
 
-    <li>
-      <a routerLink="/">
-        <i class="material-symbols-rounded">home</i>
-        <span class="link-name">Home</span>
-      </a>
-      <ul class="sub-menu blank">
-        <li><a class="link-name" routerLink="/">Home</a></li>
-      </ul>
-    </li>
+      <li>
+        <a routerLink="projects">
+          <i class="material-symbols-rounded">dashboard</i>
+          <span class="link-name">Projects</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link-name" routerLink="/projects">Projects</a></li>
+        </ul>
+      </li>
+    </div>
 
-    <li>
-      <a routerLink="projects">
-        <i class="material-symbols-rounded">dashboard</i>
-        <span class="link-name">Projects</span>
-      </a>
-      <ul class="sub-menu blank">
-        <li><a class="link-name" routerLink="/projects">Projects</a></li>
-      </ul>
-    </li>
+    <div class="w-full">
+      <li>
+        <a routerLink="profile">
+          <i class="material-symbols-rounded">person</i>
+          <span class="link-name">Profile</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link-name" routerLink="/profile">Profile</a></li>
+        </ul>
+      </li>
 
-    <li>
-      <a routerLink="profile">
-        <i class="material-symbols-rounded">person</i>
-        <span class="link-name">Profile</span>
-      </a>
-      <ul class="sub-menu blank">
-        <li><a class="link-name" routerLink="/profile">Profile</a></li>
-      </ul>
-    </li>
+      <li class="logout">
+        <a routerLink="/">
+          <i class="material-symbols-rounded">logout</i>
+          <span class="link-name">Log out</span>
+        </a>
+        <ul class="sub-menu blank bg-red-500">
+          <li><a class="link-name bg-red-500" routerLink="/">Log out</a></li>
+        </ul>
+      </li>
 
-    <li class="logout">
-      <a routerLink="/">
-        <i class="material-symbols-rounded">logout</i>
-        <span class="link-name">Log out</span>
-      </a>
-      <ul class="sub-menu blank bg-red-500">
-        <li><a class="link-name bg-red-500" routerLink="/">Log out</a></li>
-      </ul>
-    </li>
+      <li class="signup">
+        <a routerLink="signup">
+          <i class="material-symbols-rounded signup">add_box</i>
+          <span class="link-name signup">Sign up</span>
+        </a>
+        <ul class="sub-menu blank signup">
+          <li><a class="link-name signup" routerLink="/signup">Sign up</a></li>
+        </ul>
+      </li>
 
-    <li class="mt-8 signup">
-      <a routerLink="signup">
-        <i class="material-symbols-rounded signup">add_box</i>
-        <span class="link-name signup">Sign up</span>
-      </a>
-      <ul class="sub-menu blank signup">
-        <li><a class="link-name signup" routerLink="/signup">Sign up</a></li>
-      </ul>
-    </li>
-
-
-    <li class="login">
-      <a routerLink="login">
-        <i class="material-symbols-rounded login">login</i>
-        <span class="link-name login">Log in</span>
-      </a>
-      <ul class="sub-menu blank">
-        <li><a class="link-name login" routerLink="/login">Log in</a></li>
-      </ul>
-    </li>
+      <li class="login">
+        <a routerLink="login">
+          <i class="material-symbols-rounded login">login</i>
+          <span class="link-name login">Log in</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link-name login" routerLink="/login">Log in</a></li>
+        </ul>
+      </li>
+    </div>
 
     <!-- <li class="showMenu">
         <div class="iocn-link">
@@ -88,7 +90,6 @@
           <li><a href="#">Card Design</a></li>
         </ul>
       </li> -->
-
 
   </ul>
 
