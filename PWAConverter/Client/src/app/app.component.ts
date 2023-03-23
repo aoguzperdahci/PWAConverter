@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { UIBlockService } from './services/uiblock.service';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +10,9 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'Client';
   isSidebarToggled = true;
+  isBlocked$ = this.UIBlockService.block$;
+
+  constructor(private UIBlockService: UIBlockService) {
+
+  }
 }

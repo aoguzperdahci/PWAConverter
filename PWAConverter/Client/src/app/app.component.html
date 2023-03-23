@@ -1,5 +1,9 @@
 <app-sidebar [(sidebarToggle)]="isSidebarToggled"></app-sidebar>
 
-<div class="main-content surface-50" [ngClass]=" isSidebarToggled ? 'sidebarOpen': 'sidebarClose' ">
+<div class="main-content surface-50" [ngClass]=" isSidebarToggled ? 'sidebarOpen': 'sidebarClose' " style="z-index: -1;">
   <router-outlet></router-outlet>
 </div>
+
+<p-blockUI [blocked]="(isBlocked$ | async) === true">
+  <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+</p-blockUI>
