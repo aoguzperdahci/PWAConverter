@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RegisterRequest } from 'src/OpenApiClient';
 
 @Component({
   selector: 'app-signup',
@@ -6,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent {
+  user = new RegisterRequest ({name: "", email: "", password: ""});
 
+  signup(){
+    console.log(this.user);
+  }
 }
