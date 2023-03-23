@@ -1,6 +1,6 @@
 <app-sidebar [(sidebarToggle)]="isSidebarToggled"></app-sidebar>
 
-<div class="main-content surface-50" [ngClass]=" isSidebarToggled ? 'sidebarOpen': 'sidebarClose' " style="z-index: -1;">
+<div class="main-content surface-50" [ngClass]=" isSidebarToggled ? 'sidebarOpen': 'sidebarClose' ">
   <router-outlet></router-outlet>
 </div>
 

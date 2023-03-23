@@ -17,3 +17,7 @@ body {
   'GRAD' 0,
   'opsz' 48
 }
+
+.p-blockui-document.p-blockui.p-component-overlay.p-component-overlay-enter{
+  z-index: 500 !important;
+}
