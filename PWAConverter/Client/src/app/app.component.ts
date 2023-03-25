@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { UIBlockService } from './services/uiblock.service';
 
 @Component({
