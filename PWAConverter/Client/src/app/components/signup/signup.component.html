@@ -8,14 +8,35 @@
 
   <div>
     <label for="name" class="block text-900 font-medium mb-2">Name</label>
-    <input id="name" type="text" placeholder="Name" pInputText class="w-full mb-3">
+    <input type="text" id="name" name="name" class="form-control w-full mb-3" placeholder="Name" required pInputText
+      [(ngModel)]="user.name" #name="ngModel"
+      [ngClass]="{'ng-invalid ng-dirty': name.invalid && (name.dirty || name.touched)}">
+    <ul *ngIf="name.invalid && (name.dirty || name.touched)" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+      <li *ngIf="name.errors?.['required']">Name is required.</li>
+    </ul>
 
     <label for="email" class="block text-900 font-medium mb-2">Email</label>
-    <input id="email" type="text" placeholder="Email address" pInputText class="w-full mb-3">
+    <input type="email" id="email" name="email" class="form-control w-full mb-3" placeholder="Email address" required
+      pattern="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$" pInputText [(ngModel)]="user.email" #email="ngModel"
+      [ngClass]="{'ng-invalid ng-dirty': email.invalid && (email.dirty || email.touched)}">
+    <ul *ngIf="email.invalid && email.touched" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+      <li *ngIf="email.errors?.['required']">Email is required.</li>
+      <li *ngIf="email.errors?.['pattern']">Email is not valid.</li>
+    </ul>
 
     <label for="password" class="block text-900 font-medium mb-2">Password</label>
-    <input id="password" type="password" placeholder="Password" pInputText class="w-full mb-5">
+    <input type="password" id="password" name="password" class="form-control w-full mb-3" placeholder="Password"
+      required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{3,}$" minlength="8" pInputText [(ngModel)]="user.password"
+      #password="ngModel" [ngClass]="{'ng-invalid ng-dirty': password.invalid && (password.dirty || password.touched)}">
+    <ul *ngIf="password.invalid && (password.dirty || password.touched)" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+      <li *ngIf="password.errors?.['required']">Password is required.</li>
+      <li *ngIf="password.errors?.['pattern']">Password must contain at least one lowercase.</li>
+      <li *ngIf="password.errors?.['pattern']">Password must contain at least one uppercase.</li>
+      <li *ngIf="password.errors?.['pattern']">Password must contain at least one numeric.</li>
+      <li *ngIf="password.errors?.['minlength']">Password must be at least 8 characters.</li>
+    </ul>
 
-    <button pButton label="Sign up" class="w-full"></button>
+    <button pButton [disabled]="name.invalid || email.invalid || password.invalid"
+      label="Sign up" class="w-full mt-3" onclick="" (click)="signup()"></button>
   </div>
 </div>
