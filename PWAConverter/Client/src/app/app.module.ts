@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { SpeedDialModule } from 'primeng/speeddial';
+import { ToastModule } from 'primeng/toast';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AvatarModule } from 'primeng/avatar';
@@ -17,6 +20,8 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 
 @NgModule({
   declarations: [
@@ -32,6 +37,7 @@ import { DividerModule } from 'primeng/divider';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    BrowserAnimationsModule,
     ButtonModule,
     CheckboxModule,
     InputTextModule,
@@ -39,6 +45,10 @@ import { DividerModule } from 'primeng/divider';
     DividerModule,
     BlockUIModule,
     AvatarModule,
+    SpeedDialModule,
+    ToastModule,
+    TooltipModule,
+    ConfirmPopupModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
