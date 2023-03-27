@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using PWAConverter.Entities;
-using PWAConverter.Models.User;
+using PWAConverter.Models.Auth;
 
 namespace PWAConverter.Helpers
 {
@@ -8,25 +8,8 @@ namespace PWAConverter.Helpers
     {
         public AutoMapperProfile()
         {
-            // User -> AuthenticateResponse
-            CreateMap<User, AuthenticateResponse>();
-
             // RegisterRequest -> User
             CreateMap<RegisterRequest, User>();
-
-            
-            // UpdateRequest -> User
-            CreateMap<UpdateRequest, User>()
-                .ForAllMembers(x => x.Condition(
-                    (src, dest, prop) =>
-                    {
-                        // ignore null & empty string properties
-                        if (prop == null) return false;
-                        if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
-
-                        return true;
-                    }
-                ));
         }
     }
 }

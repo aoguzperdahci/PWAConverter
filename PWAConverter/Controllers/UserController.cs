@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using PWAConverter.Entities;
-using PWAConverter.Helpers;
 using PWAConverter.Models.User;
-using PWAConverter.Services;
+using PWAConverter.Services.Interfaces;
+using System.Security.Claims;
 
 namespace PWAConverter.Controllers
 {
@@ -22,98 +20,104 @@ namespace PWAConverter.Controllers
         }
 
         /// <summary>
-        /// The method allows user to login the system and creates a token.
+        /// Get current user
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns>Token</returns>
-        [AllowAnonymous]
-        [HttpPost("authenticate")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        /// <returns>User</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetUser()
         {
-            var response = _userService.Authenticate(model);
-            return response == null ? NotFound() : Ok(response);
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var user = await _userService.GetByIdAsync(userId);
 
-        }
-
-        /// <summary>
-        /// The method evaluates whether the token is valid or not.
-        /// </summary>
-        /// <param name="token">Token itself.</param>
-        /// <returns>Success message.</returns>
-        [HttpPost("validate")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Object))]
-        public IActionResult Validate(string token)
-        {
-            _userService.Validate(token);
-            return Ok(new { message = "Validation successful" });
-        }
-        /// <summary>
-        /// The method allows user to register the system.
-        /// </summary>
-        /// <param name="model">Email, password, name</param>
-        /// <returns>Success message</returns>
-        [AllowAnonymous]
-        [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Object))]
-        public IActionResult Register(RegisterRequest model)
-        {
-            _userService.Register(model);
-            return Ok(new { message = "Registration successful" });
-        }
-        /// <summary>
-        /// The method allows to get a list of all the users.
-        /// </summary>
-        /// <returns>User list</returns>
-        [HttpGet("getAll")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<User>))]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll();
-            return Ok(users);
-        }
-        /// <summary>
-        /// The method allows getting user object with the search of <paramref name="id"/>
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetById(Guid id)
-        {
-            var user = _userService.GetById(id);
-            return user == null ? NotFound() : Ok(user);
-
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var userDTO = new UserDTO { Name = user.Name, Email = user.Email };
+                return Ok(userDTO);
+            }
         }
 
         /// <summary>
         /// The methos allows user to delete its account.
         /// </summary>
-        /// <returns>Success message</returns>
+        /// <returns>Status code</returns>
         [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Object))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult Delete()
+        public async Task<IActionResult> DeleteUser()
         {
-            _userService.Delete();
-            return Ok(new { message = "User deleted successfully" });
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var isSuccessful = await _userService.DeleteAsync(userId);
+
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
-        /// The method allows user to change its password.
+        /// Update user password
         /// </summary>
-        /// <param name="model">Email, old password and new password of the user.</param>
-        /// <returns>Success message</returns>
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Object))]
+        /// <param name="model">User credentials</param>
+        /// <returns>Status code</returns>
+        [HttpPut("password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult Update(UpdateRequest model)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordRequest model)
         {
-            _userService.Update(model);
-            return Ok(new { message = "User updated successfully" });
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var isSuccessful = await _userService.UpdatePasswordAsync(userId, model);
+
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
+
+        /// <summary>
+        /// Update user email
+        /// </summary>
+        /// <param name="model">User credentials and new email</param>
+        /// <returns>Status code</returns>
+        [HttpPut("email")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateEmail(UpdateEmailRequest model)
+        {
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var isSuccessful = await _userService.UpdateEmailAsync(userId, model);
+
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }
 
