@@ -10,6 +10,7 @@ namespace PWAConverter.Entities
 
         [JsonIgnore]
         public string PasswordHash { get; set; }
+        [JsonIgnore]
         public string PasswordSalt { get; set; }
         protected List<Project> _projectList { get; } = new List<Project>();
         public IReadOnlyCollection<Project> Projects => _projectList;
