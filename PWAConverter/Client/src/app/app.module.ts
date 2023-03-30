@@ -17,6 +17,8 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { DividerModule } from 'primeng/divider';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     FormsModule,
     ButtonModule,
     CheckboxModule,
@@ -40,7 +43,9 @@ import { DividerModule } from 'primeng/divider';
     BlockUIModule,
     AvatarModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
