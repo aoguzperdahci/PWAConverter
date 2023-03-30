@@ -22,8 +22,8 @@
         </ul>
       </li>
 
-      <li>
-        <a routerLink="projects">
+      <li *ngIf="(isLoggedIn$ | async)">
+        <a routerLink="/projects">
           <i class="material-symbols-rounded">dashboard</i>
           <span class="link-name">Projects</span>
         </a>
@@ -33,47 +33,57 @@
       </li>
     </div>
 
-    <div class="w-full">
-      <li>
-        <a routerLink="profile">
-          <i class="material-symbols-rounded">person</i>
-          <span class="link-name">Profile</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link-name" routerLink="/profile">Profile</a></li>
-        </ul>
-      </li>
+    <div *ngIf="(isLoggedIn$ | async); then loggedIn else notLoggedIn"></div>
 
-      <li class="logout">
-        <a routerLink="/">
-          <i class="material-symbols-rounded">logout</i>
-          <span class="link-name">Log out</span>
-        </a>
-        <ul class="sub-menu blank bg-red-500">
-          <li><a class="link-name bg-red-500" routerLink="/">Log out</a></li>
-        </ul>
-      </li>
+    <ng-template #loggedIn>
+      <div class="w-full">
+        <li>
+          <a routerLink="/profile">
+            <i class="material-symbols-rounded">person</i>
+            <span class="link-name">Profile</span>
+          </a>
+          <ul class="sub-menu blank">
+            <li><a class="link-name" routerLink="/profile">Profile</a></li>
+          </ul>
+        </li>
 
-      <li class="signup">
-        <a routerLink="signup">
-          <i class="material-symbols-rounded signup">add_box</i>
-          <span class="link-name signup">Sign up</span>
-        </a>
-        <ul class="sub-menu blank signup">
-          <li><a class="link-name signup" routerLink="/signup">Sign up</a></li>
-        </ul>
-      </li>
+        <li class="logout" (click)="logOut()">
+          <a routerLink="/">
+            <i class="material-symbols-rounded">logout</i>
+            <span class="link-name">Log out</span>
+          </a>
+          <ul class="sub-menu blank bg-red-500">
+            <li><a class="link-name bg-red-500" routerLink="/">Log out</a></li>
+          </ul>
+        </li>
+      </div>
+    </ng-template>
 
-      <li class="login">
-        <a routerLink="login">
-          <i class="material-symbols-rounded login">login</i>
-          <span class="link-name login">Log in</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link-name login" routerLink="/login">Log in</a></li>
-        </ul>
-      </li>
-    </div>
+    <ng-template #notLoggedIn>
+      <div class="w-full">
+        <li class="signup">
+          <a routerLink="/signup">
+            <i class="material-symbols-rounded signup">add_box</i>
+            <span class="link-name signup">Sign up</span>
+          </a>
+          <ul class="sub-menu blank signup">
+            <li><a class="link-name signup" routerLink="/signup">Sign up</a></li>
+          </ul>
+        </li>
+
+        <li class="login">
+          <a routerLink="/login">
+            <i class="material-symbols-rounded login">login</i>
+            <span class="link-name login">Log in</span>
+          </a>
+          <ul class="sub-menu blank">
+            <li><a class="link-name login" routerLink="/login">Log in</a></li>
+          </ul>
+        </li>
+      </div>
+    </ng-template>
+
+
 
     <!-- <li class="showMenu">
         <div class="iocn-link">
