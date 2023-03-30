@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using PWAConverter.Helpers;
+using PWAConverter.Entities;
 using PWAConverter.Models.User;
-using PWAConverter.Services;
+using PWAConverter.Services.Interfaces;
+using System.Security.Claims;
 
 namespace PWAConverter.Controllers
 {
@@ -20,57 +19,105 @@ namespace PWAConverter.Controllers
             _userService = userService;
         }
 
-        [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        /// <summary>
+        /// Get current user
+        /// </summary>
+        /// <returns>User</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetUser()
         {
-            var response = _userService.Authenticate(model);
-            return Ok(response);
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var user = await _userService.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var userDTO = new UserDTO { Name = user.Name, Email = user.Email };
+                return Ok(userDTO);
+            }
         }
 
-
-        [HttpPost("validate")]
-        public IActionResult Validate(string token)
-        {
-            _userService.Validate(token);
-            return Ok();
-        }
-
-        [AllowAnonymous]
-        [HttpPost("register")]
-        public IActionResult Register(RegisterRequest model)
-        {
-            _userService.Register(model);
-            return Ok(new { message = "Registration successful" });
-        }
-
-        [HttpGet("getAll")]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll();
-            return Ok(users);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(Guid id)
-        {
-            var user = _userService.GetById(id);
-            return Ok(user);
-        }
-
+        /// <summary>
+        /// The methos allows user to delete its account.
+        /// </summary>
+        /// <returns>Status code</returns>
         [HttpDelete]
-        public IActionResult Delete()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DeleteUser()
         {
-            _userService.Delete();
-            return Ok(new { message = "User deleted successfully" });
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var isSuccessful = await _userService.DeleteAsync(userId);
+
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
-        [HttpPut]
-        public IActionResult Update(UpdateRequest model)
+        /// <summary>
+        /// Update user password
+        /// </summary>
+        /// <param name="model">User credentials</param>
+        /// <returns>Status code</returns>
+        [HttpPut("password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordRequest model)
         {
-            _userService.Update(model);
-            return Ok(new { message = "User updated successfully" });
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var isSuccessful = await _userService.UpdatePasswordAsync(userId, model);
+
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
+
+        /// <summary>
+        /// Update user email
+        /// </summary>
+        /// <param name="model">User credentials and new email</param>
+        /// <returns>Status code</returns>
+        [HttpPut("email")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateEmail(UpdateEmailRequest model)
+        {
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var isSuccessful = await _userService.UpdateEmailAsync(userId, model);
+
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }
 

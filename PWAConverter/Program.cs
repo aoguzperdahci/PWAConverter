@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PWAConverter;
-using PWAConverter.Authorization;
 using PWAConverter.Data;
 using PWAConverter.Helpers;
-using PWAConverter.Services;
 using System.Text;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using PWAConverter.Services.Concrete;
+using PWAConverter.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -64,6 +62,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
 // configure DI for application services
 services.AddScoped<IJwtUtils, JwtUtils>();
 services.AddScoped<IUserService, UserService>();
+services.AddScoped<IAuthService, AuthService>();
 services.AddHttpContextAccessor();
 var app = builder.Build();
 
@@ -72,11 +71,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi(options =>
     {
-        //options.PostProcess = (document, request) =>
-        //{
-        //    document.Servers.Clear();
-        //    document.Servers.Add(new OpenApiServer { Url = serverUrl });
-        //};
         options.Path = "v1/openapi/pwa-converter.yaml";
         options.DocumentName = "pwa-converter";
     });
