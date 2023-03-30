@@ -22,6 +22,7 @@ import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ProjectItemComponent } from './components/project-item/project-item.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
     HomeComponent,
     ProjectsComponent,
     ProfileComponent,
+    ProjectItemComponent,
   ],
   imports: [
     BrowserModule,
