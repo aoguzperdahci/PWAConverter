@@ -1,29 +1,26 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
-const AUTH_TOKEN_NAME = "authToken";
+const AUTH_TOKEN_NAME = 'authToken';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthTokenService {
-  private token = "";
+  token$ = new BehaviorSubject<string>(this.getToken());
 
-  saveToken(token: string){
-    this.token = token;
+  saveToken(token: string) {
+    this.token$.next(token);
     localStorage.setItem(AUTH_TOKEN_NAME, token);
   }
 
-  getToken(): string{
-    if (this.token) {
-      return this.token;
-    }else{
-      const token = localStorage.getItem(AUTH_TOKEN_NAME);
-      return token ?? "";
-    }
+  getToken(): string {
+    const token = localStorage.getItem(AUTH_TOKEN_NAME);
+    return token ?? '';
   }
 
-  clearToken(){
-    this.token = "";
+  clearToken() {
+    this.token$.next('');
     localStorage.removeItem(AUTH_TOKEN_NAME);
   }
 }
