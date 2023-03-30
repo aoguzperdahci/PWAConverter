@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError } from 'rxjs';
 import { AuthTokenService } from 'src/app/services/auth-token.service';
+import { UIBlockService } from 'src/app/services/uiblock.service';
 import { AuthClient, AuthenticateRequest } from 'src/OpenApiClient';
 
 const REMEMBER_USER = 'remember-credentials';
@@ -16,7 +18,9 @@ export class LoginComponent {
 
   constructor(
     private authClient: AuthClient,
-    private authTokenService: AuthTokenService
+    private authTokenService: AuthTokenService,
+    private router: Router,
+    private UIBlockService: UIBlockService
   ) {}
 
   login() {
@@ -24,15 +28,22 @@ export class LoginComponent {
       this.saveUserCredentials();
     }
 
+    this.UIBlockService.blockUI();
+
     this.authClient
       .authenticate(this.credentials)
       .pipe(
         catchError((err) => {
+          this.UIBlockService.unblockUI();
           console.log('failed'); //Todo: Replace this with toast
           throw err;
         })
       )
-      .subscribe((token) => this.authTokenService.saveToken(token));
+      .subscribe((token) => {
+        this.authTokenService.saveToken(token);
+        this.UIBlockService.unblockUI();
+        this.router.navigateByUrl("/");
+      });
   }
 
   saveUserCredentials() {
