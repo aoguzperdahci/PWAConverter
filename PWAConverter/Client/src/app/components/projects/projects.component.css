@@ -1,0 +1,7 @@
+.add-new-card:hover {
+  border-color: var(--surface-600) !important;
+}
+
+.add-new-card:hover .card-title {
+  text-decoration: underline;
+}
