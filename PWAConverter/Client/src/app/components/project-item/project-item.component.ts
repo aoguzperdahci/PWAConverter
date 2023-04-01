@@ -1,3 +1,4 @@
+import { HttpEvent } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 
@@ -8,6 +9,8 @@ import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
   providers: [MessageService, ConfirmationService],
 })
 export class ProjectItemComponent {
+  editDialogVisible = false;
+  manifestDialogVisible = false;
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -36,6 +39,39 @@ export class ProjectItemComponent {
         },
       });
     }
+  }
+
+  confirmResourceCollector(event: Event) {
+    if (event.target) {
+      this.confirmationService.confirm({
+        target: event.target,
+        message: 'Are you sure that you want to generate resource collector?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Confirmed',
+            detail: 'Resource collector generated',
+          });
+        },
+        reject: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Rejected',
+            detail: 'You have rejected',
+          });
+        },
+      });
+    }
+  }
+
+
+  showEditDialog(){
+    this.editDialogVisible = true;
+  }
+
+  showManifestDialog(){
+    this.manifestDialogVisible = true;
   }
 
 }

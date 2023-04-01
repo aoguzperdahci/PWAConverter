@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { SpeedDialModule } from 'primeng/speeddial';
 import { ToastModule } from 'primeng/toast';
 import { AppRoutingModule } from './app-routing.module';
@@ -22,6 +21,9 @@ import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { DialogModule } from 'primeng/dialog';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ImageModule } from 'primeng/image';
 import { ProjectItemComponent } from './components/project-item/project-item.component';
 
 @NgModule({
@@ -51,6 +53,9 @@ import { ProjectItemComponent } from './components/project-item/project-item.com
     ToastModule,
     TooltipModule,
     ConfirmPopupModule,
+    DialogModule,
+    FileUploadModule,
+    ImageModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

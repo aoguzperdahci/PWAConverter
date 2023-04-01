@@ -10,12 +10,37 @@
   </div>
   <div class="flex align-items-center justify-content-center">
     <button pButton icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom"
-      class="p-button-rounded p-button-warning m-1"></button>
+      class="p-button-rounded p-button-warning m-1" (click)="showEditDialog()"></button>
     <button pButton icon="pi pi-trash" pTooltip="Delete" tooltipPosition="bottom"
       class="p-button-rounded p-button-danger m-1" (click)="confirmDelete($event)"></button>
     <button pButton icon="pi pi-file" pTooltip="Manifest" tooltipPosition="bottom"
-      class="p-button-rounded p-button-help m-1"></button>
+      class="p-button-rounded p-button-help m-1" (click)="showManifestDialog()"></button>
     <button pButton icon="pi pi-cog" pTooltip="Resource Collector" tooltipPosition="bottom"
-      class="p-button-rounded p-button-secondary m-1"></button>
+      class="p-button-rounded p-button-secondary m-1" (click)="confirmResourceCollector($event)"></button>
   </div>
 </div>
+
+<p-dialog header="Edit" [(visible)]="editDialogVisible" [modal]="true" [style]="{width: '600px'}">
+  <div class="flex justify-content-center flex-wrap">
+    <div class="icon-container w-5 shadow-2 border-round">
+      <img class="icon-image"
+        [src]="'https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder-1024x1024.png'"
+        [alt]="'placeholder-1024x1024'" />
+      <div class="icon-overlay">
+        <div class="icon-upload">
+          <i class="pi pi-upload text-4xl"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full flex flex-wrap align-items-center justify-content-start mt-4">
+      <div class="w-2"></div>
+      <label for="name1" class="block text-900 font-medium mr-2">Name</label>
+      <input id="name1" type="text" placeholder="Name" pInputText class="align-self-center w-6">
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog header="Manifest" [(visible)]="manifestDialogVisible" [modal]="true" [style]="{width: '600px'}">
+</p-dialog>
+
