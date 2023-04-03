@@ -8,10 +8,15 @@ import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
   providers: [MessageService, ConfirmationService],
 })
 export class ProjectsComponent {
+  addNewDialogVisible = false;
 
   constructor(
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
+
+  showAddNewDialog(){
+    this.addNewDialogVisible = true;
+  }
 
 }
