@@ -11,6 +11,8 @@ import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 export class ProjectItemComponent {
   editDialogVisible = false;
   manifestDialogVisible = false;
+  value = "";
+  options = ["1111111", "2222222", "33333333"]
 
   constructor(
     private confirmationService: ConfirmationService,

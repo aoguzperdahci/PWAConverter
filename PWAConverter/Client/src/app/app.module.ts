@@ -24,6 +24,9 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ImageModule } from 'primeng/image';
+import { TabViewModule } from 'primeng/tabview';
+import { DropdownModule } from 'primeng/dropdown';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { ProjectItemComponent } from './components/project-item/project-item.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
@@ -59,6 +62,9 @@ import { AuthInterceptor } from './auth.interceptor';
     DialogModule,
     FileUploadModule,
     ImageModule,
+    TabViewModule,
+    DropdownModule,
+    ColorPickerModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
