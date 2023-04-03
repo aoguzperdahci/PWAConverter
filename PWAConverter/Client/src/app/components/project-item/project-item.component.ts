@@ -11,6 +11,7 @@ import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 export class ProjectItemComponent {
   editDialogVisible = false;
   manifestDialogVisible = false;
+  resourceCollectorDialogVisible = false;
   value = "";
   options = ["1111111", "2222222", "33333333"]
 
@@ -43,28 +44,8 @@ export class ProjectItemComponent {
     }
   }
 
-  confirmResourceCollector(event: Event) {
-    if (event.target) {
-      this.confirmationService.confirm({
-        target: event.target,
-        message: 'Are you sure that you want to generate resource collector?',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Confirmed',
-            detail: 'Resource collector generated',
-          });
-        },
-        reject: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Rejected',
-            detail: 'You have rejected',
-          });
-        },
-      });
-    }
+  showResourceCollectorDialog() {
+    this.resourceCollectorDialogVisible = true;
   }
 
 
