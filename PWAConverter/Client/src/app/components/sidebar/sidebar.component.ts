@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { map } from 'rxjs';
 import { Theme } from 'src/app/models/theme';
+import { AuthTokenService } from 'src/app/services/auth-token.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
@@ -13,8 +14,9 @@ export class SidebarComponent {
   @Input() sidebarToggle!: boolean;
   @Output() sidebarToggleChange = new EventEmitter<boolean>();
   isActiveThemeLight$ = this.themeService.activeTheme$.pipe(map(theme => theme === Theme.Light));
+  isLoggedIn$ = this.authTokenService.token$.pipe(map(token => token !== ""));
 
-  constructor(private themeService: ThemeService) {
+  constructor(private themeService: ThemeService, private authTokenService: AuthTokenService) {
   }
 
   toggleSidebar(){
@@ -24,5 +26,9 @@ export class SidebarComponent {
 
   switchTheme(){
     this.themeService.switchTheme();
+  }
+
+  logOut(){
+    this.authTokenService.clearToken();
   }
 }
