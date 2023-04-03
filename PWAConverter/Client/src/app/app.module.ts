@@ -25,6 +25,8 @@ import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ImageModule } from 'primeng/image';
 import { ProjectItemComponent } from './components/project-item/project-item.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,7 @@ import { ProjectItemComponent } from './components/project-item/project-item.com
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
     ButtonModule,
@@ -57,7 +60,9 @@ import { ProjectItemComponent } from './components/project-item/project-item.com
     FileUploadModule,
     ImageModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
