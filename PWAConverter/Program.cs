@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 // Add services to the container.
 
-services.AddControllers();
+services.AddControllers().AddNewtonsoftJson(opt=>opt.SerializerSettings.ReferenceLoopHandling= Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 services.AddEndpointsApiExplorer();
 services.AddOpenApiDocument(options =>
 {

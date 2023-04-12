@@ -1,11 +1,11 @@
-﻿namespace PWAConverter.Entities
+﻿using PWAConverter.Entities;
+
+namespace PWAConverter.Models.Source
 {
-    public class Source
+    public class CreateSourceModel
     {
-        public Guid Id { get; set; }
         public string Url { get; set; }
         public Method Method { get; set; }
         public Guid ProjectId { get; set; }
-        public Project Project { get; set; }
     }
 }

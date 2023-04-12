@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PWAConverter.Data;
 
@@ -11,9 +12,10 @@ using PWAConverter.Data;
 namespace PWAConverter.Migrations
 {
     [DbContext(typeof(PWAConverterContext))]
-    partial class PWAConverterContextModelSnapshot : ModelSnapshot
+    [Migration("20230408213442_Update_ProjectAttributes")]
+    partial class Update_ProjectAttributes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +68,7 @@ namespace PWAConverter.Migrations
                     b.HasIndex("ProjectId")
                         .IsUnique();
 
-                    b.ToTable("Manifests", (string)null);
+                    b.ToTable("Manifests");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
@@ -94,7 +96,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>
@@ -117,7 +119,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Sources", (string)null);
+                    b.ToTable("Sources");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.User", b =>
@@ -144,7 +146,7 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Manifest", b =>

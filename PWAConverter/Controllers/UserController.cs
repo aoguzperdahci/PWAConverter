@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PWAConverter.Data;
 using PWAConverter.Entities;
 using PWAConverter.Models.User;
 using PWAConverter.Services.Interfaces;
@@ -13,10 +14,12 @@ namespace PWAConverter.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _userService;
+        private PWAConverterContext _dataContext;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, PWAConverterContext dataContext)
         {
             _userService = userService;
+            _dataContext = dataContext;
         }
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace PWAConverter.Controllers
         }
 
         /// <summary>
-        /// The methos allows user to delete its account.
+        /// The method allows user to delete its account.
         /// </summary>
         /// <returns>Status code</returns>
         [HttpDelete]
@@ -116,6 +119,22 @@ namespace PWAConverter.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        /// <summary>
+        /// Get the project list of user.
+        /// </summary>
+        /// <returns>Project list</returns>
+        [HttpGet("projectList")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Project>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetProjectList()
+        {
+            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
+            var userId = Guid.Parse(claim.Value);
+            var projects = _dataContext.Projects.Where(p=>p.UserId == userId).ToList();
+            return Ok(projects);
         }
 
     }

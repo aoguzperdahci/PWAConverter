@@ -1,6 +1,8 @@
-﻿namespace PWAConverter.Entities
+﻿using PWAConverter.Entities;
+
+namespace PWAConverter.Models.Manifest
 {
-    public class Manifest
+    public class UpdateManifestModel
     {
         public Guid Id { get; set; }
         public string ShortName { get; set; }
@@ -11,7 +13,6 @@
         public string ThemeColor { get; set; }
         public string StartUrl { get; set; }
         public string Scope { get; set; }
-        public Project Project { get; set; }
         public Guid ProjectId { get; set; }
     }
 }
