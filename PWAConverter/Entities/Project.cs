@@ -11,7 +11,6 @@ namespace PWAConverter.Entities
         public string IconId { get; set; }
         public string ProjectDetailId { get; set; }
         public User User { get; set; }
-        public Guid UserId { get; set; }
         public Manifest Manifest { get; set; }
         protected List<Source> _sources { get; } = new List<Source>();
         public IReadOnlyCollection<Source> Sources => _sources; 

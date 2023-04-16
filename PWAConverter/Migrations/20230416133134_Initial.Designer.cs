@@ -12,8 +12,8 @@ using PWAConverter.Data;
 namespace PWAConverter.Migrations
 {
     [DbContext(typeof(PWAConverterContext))]
-    [Migration("20230318195534_FirstMig")]
-    partial class FirstMig
+    [Migration("20230416133134_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,6 +37,12 @@ namespace PWAConverter.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DisplayMode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Orientation")
+                        .HasColumnType("int");
 
                     b.Property<string>("Scope")
                         .IsRequired()
@@ -65,7 +71,7 @@ namespace PWAConverter.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Icon")
+                    b.Property<string>("IconId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -76,11 +82,11 @@ namespace PWAConverter.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProjectDetail")
+                    b.Property<string>("ProjectDetailId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -97,6 +103,9 @@ namespace PWAConverter.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uniqueidentifier");
@@ -147,11 +156,15 @@ namespace PWAConverter.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PWAConverter.Entities.User", null)
+                    b.HasOne("PWAConverter.Entities.User", "User")
                         .WithMany("Projects")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Manifest");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>

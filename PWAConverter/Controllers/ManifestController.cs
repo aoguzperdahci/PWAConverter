@@ -36,14 +36,22 @@ namespace PWAConverter.Controllers
         {
             var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
             var userId = Guid.Parse(claim.Value);
-            var user = _dataContext.Users.FindAsync(userId).Result;
+            var user = _dataContext.Users.Include("Projects").ToList().Where(x=>x.Id == userId).First();
             if(user == null) { return NotFound(); }
-            bool isBelong = _dataContext.Projects.Any(p => p.Id == model.ProjectId && p.UserId == user.Id);
-            if (isBelong)
+            Project project = user.Projects.Where(p => p.Id == model.ProjectId).First();
+            if (project != null)
             {
-                var manifest = _dataContext.Manifests.FindAsync(model.Id).Result;
+                var manifest = project.Manifest;
                 if(manifest== null) { return NotFound(); }
-                _mapper.Map<Manifest>(model);
+                manifest.ShortName = model.ShortName;
+                manifest.Description = model.Description;
+                manifest.DisplayMode = model.DisplayMode;
+                manifest.Orientation = model.Orientation;
+                manifest.BackGroundColor= model.BackGroundColor;
+                manifest.ThemeColor = model.ThemeColor;
+                manifest.StartUrl = model.StartUrl;
+                manifest.Scope = model.Scope;
+
                 _dataContext.Manifests.Update(manifest);
                 await _dataContext.SaveChangesAsync();
                 return Ok();

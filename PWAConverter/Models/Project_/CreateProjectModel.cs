@@ -10,7 +10,7 @@ namespace PWAConverter.Models.Project_
         public string IconId { get; set; }
        
         public string ProjectDetailId { get; set; }
-        public Guid UserId { get; set; }
+        
 
     }
 }

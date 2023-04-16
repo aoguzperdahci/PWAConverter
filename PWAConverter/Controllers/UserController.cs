@@ -133,8 +133,9 @@ namespace PWAConverter.Controllers
         {
             var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
             var userId = Guid.Parse(claim.Value);
-            var projects = _dataContext.Projects.Where(p=>p.UserId == userId).ToList();
-            return Ok(projects);
+            var user = _userService.GetByIdAsync(userId);
+            
+            return Ok(user.Result.Projects);
         }
 
     }

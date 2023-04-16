@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PWAConverter.Data;
 using PWAConverter.Entities;
-using PWAConverter.Migrations;
 using PWAConverter.Models.Manifest;
 using PWAConverter.Models.Project_;
 using System.Security.Claims;
@@ -35,13 +34,12 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Project?> GetByIdAsync(Guid id)
         {
-            var user = _dataContext.Users.FindAsync(GetUserId()).Result;
-            if(user == null) { return null; }
-            var projects = _dataContext.Projects;
-            bool isBelong = projects.Any(p => p.Id == id && p.UserId == user.Id);
+            var user = _dataContext.Users.Include("Projects").ToList().Where(x => x.Id == GetUserId()).First();
+            if (user == null) { return null; }
+            bool isBelong = user.Projects.Any(x => x.Id == id);
             if (isBelong) {
-                 
-                return await projects.FindAsync(id); 
+
+                return user.Projects.Where(x=>x.Id == id).First(); 
             }
             return null;
            
@@ -59,24 +57,15 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var user = _dataContext.Users.FindAsync(GetUserId());
-            if (user.Result == null) { return NotFound(); }
-            bool isBelong = _dataContext.Projects.Any(p=>p.Id== id && p.UserId == user.Result.Id);
-            if (isBelong)
-            {
-                var project = GetByIdAsync(id).Result;
-                if(project == null) { return NotFound(); }
+            var project = GetByIdAsync(id).Result;
+            if(project == null) { return NotFound(); }
                 _dataContext.Projects.Remove(project);
                 
-                if (_dataContext.Manifests.Any(p=>p.ProjectId == id)) {
-                    var manifest = _dataContext.Manifests.FindAsync(id).Result;
-                    if(manifest!= null) {
-                        _dataContext.Manifests.Remove(manifest);
-                    }
+                if (project.Manifest != null) {
+                    _dataContext.Manifests.Remove(project.Manifest);
+                    await _dataContext.SaveChangesAsync();
+                    return Ok();
                 }
-                await _dataContext.SaveChangesAsync();
-                return Ok();
-            }
             return BadRequest();
         }
         /// <summary>
@@ -90,21 +79,12 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateAsync(CreateProjectModel projectModel)
         {
-            var user = _dataContext.Users.FindAsync(GetUserId()).Result;
+            var user = _dataContext.Users.Include("Projects").ToList().Where(x => x.Id == GetUserId()).First();
             if (user == null) { return NotFound(); }
-            projectModel.UserId = user.Id;
-            Project project = _mapper.Map<Project>(projectModel);
             
-            if (project == null) { return BadRequest(); }
-
-            var projects = _dataContext.Projects;
-            await projects.AddAsync(project);
-            await _dataContext.SaveChangesAsync();
-                        
             var manifestCommand = new CreateManifestModel
             {
-                ProjectId = project.Id,
-                ShortName = project.Name,
+                ShortName = projectModel.Name,
                 Description = "",
                 DisplayMode = DisplayMode.StandAlone,
                 Orientation = Orientation.Any,
@@ -115,6 +95,17 @@ namespace PWAConverter.Controllers
             };
             var manifest = _mapper.Map<Manifest>(manifestCommand);
             await _dataContext.Manifests.AddAsync(manifest);
+            await _dataContext.SaveChangesAsync();
+
+            Project project = new Project{ 
+                IconId = projectModel.IconId,
+                Name = projectModel.Name,
+                ProjectDetailId= projectModel.ProjectDetailId,
+                Manifest = manifest,
+                User = user,
+            };
+
+            await _dataContext.Projects.AddAsync(project);
             await _dataContext.SaveChangesAsync();
             return StatusCode(201);
 
@@ -130,19 +121,14 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateAsync(UpdateProjectModel model)
         {
-            var user = _dataContext.Users.FindAsync(GetUserId()).Result;
-            if (user == null) { return NotFound(); }
-            bool isBelong = _dataContext.Projects.Any(p => p.Id == model.Id && p.UserId == user.Id);
-            if (isBelong)
-            {
                 var project = GetByIdAsync(model.Id).Result;
                 if (project == null) { return NotFound(); }
-                _mapper.Map<Project>(model);
+                project.Name = model.Name != null ? model.Name : project.Name;
+                project.IconId = model.IconId != null ? model.IconId : project.IconId ;
+                project.ProjectDetailId = model.ProjectDetailId != null ? model.ProjectDetailId : project.ProjectDetailId;
                  _dataContext.Projects.Update(project);
                 await _dataContext.SaveChangesAsync();
                 return Ok();
-            }
-            return BadRequest();
         }
         /// <summary>
         /// Get manifest of the project
@@ -155,19 +141,11 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetManifestFile(Guid projectId)
         {
-            var user = _dataContext.Users.FindAsync(GetUserId()).Result;
-            if (user == null) { return NotFound(); }
-            bool isBelong = _dataContext.Projects.Any(p => p.Id == projectId && p.UserId == user.Id);
-            if (isBelong)
-            {
                 var project = GetByIdAsync(projectId).Result;
                 if (project == null) { return NotFound(); }
-                var manifestList = await _dataContext.Manifests.ToListAsync();
-                var manifest = manifestList.Find(x => x.ProjectId == projectId);
+                var manifest = project.Manifest;
                 if(manifest == null) { return NotFound(); }
                 return Ok(manifest);
-            }
-            return BadRequest();
         }
         /// <summary>
         /// Get the source list of project
@@ -180,18 +158,11 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetSources(Guid projectId)
         {
-            var user =_dataContext.Users.FindAsync(GetUserId()).Result;
-            if (user == null) { return NotFound(); }
-            bool isBelong = _dataContext.Projects.Any(p => p.Id == projectId && p.UserId == user.Id);
-            if (isBelong)
-            {
                 var project = GetByIdAsync(projectId).Result;
                 if (project == null) { return NotFound(); }
-                //var sourceList = project.Sources.ToList();
-                var sourceList =  _dataContext.Sources.ToList().Where(x=>x.ProjectId == projectId);
+                var sourceList =  project.Sources.ToList();
                 return Ok(sourceList);
-            }
-            return BadRequest();
+            
         }
 
         private Guid GetUserId()

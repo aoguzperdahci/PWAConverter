@@ -11,7 +11,5 @@
         public string ThemeColor { get; set; }
         public string StartUrl { get; set; }
         public string Scope { get; set; }
-        public Project Project { get; set; }
-        public Guid ProjectId { get; set; }
     }
 }

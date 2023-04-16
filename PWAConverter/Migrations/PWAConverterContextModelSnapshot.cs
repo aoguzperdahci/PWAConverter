@@ -42,9 +42,6 @@ namespace PWAConverter.Migrations
                     b.Property<int>("Orientation")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Scope")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -63,10 +60,7 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId")
-                        .IsUnique();
-
-                    b.ToTable("Manifests", (string)null);
+                    b.ToTable("Manifests");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
@@ -79,6 +73,9 @@ namespace PWAConverter.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("ManifestId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -87,14 +84,16 @@ namespace PWAConverter.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ManifestId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>
@@ -117,7 +116,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Sources", (string)null);
+                    b.ToTable("Sources");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.User", b =>
@@ -144,25 +143,26 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("PWAConverter.Entities.Manifest", b =>
-                {
-                    b.HasOne("PWAConverter.Entities.Project", "Project")
-                        .WithOne("Manifest")
-                        .HasForeignKey("PWAConverter.Entities.Manifest", "ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
                 {
-                    b.HasOne("PWAConverter.Entities.User", null)
+                    b.HasOne("PWAConverter.Entities.Manifest", "Manifest")
+                        .WithMany()
+                        .HasForeignKey("ManifestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PWAConverter.Entities.User", "User")
                         .WithMany("Projects")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manifest");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>
@@ -178,9 +178,6 @@ namespace PWAConverter.Migrations
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
                 {
-                    b.Navigation("Manifest")
-                        .IsRequired();
-
                     b.Navigation("Sources");
                 });
 

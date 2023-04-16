@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PWAConverter.Data;
 using PWAConverter.Entities;
 using PWAConverter.Models.Source;
@@ -35,18 +36,18 @@ namespace PWAConverter.Controllers
         {
             var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
             var userId = Guid.Parse(claim.Value);
-            var user = _dataContext.Users.FindAsync(userId).Result;
+            var user = _dataContext.Users.Include("Projects").ToList().Where(x => x.Id == userId).First();
             if (user == null) { return NotFound(); }
-            bool isBelong = _dataContext.Projects.Any(p => p.Id == model.ProjectId && p.UserId == user.Id);
-            if (isBelong)
+            Project project = user.Projects.Where(p => p.Id == model.ProjectId).First();
+            if (project != null)
             {
-                var sources = _dataContext.Sources.ToList();
+                var sources = project.Sources.ToList();
                 if (sources.Any(y => y.Url == model.Url && y.Method == model.Method))
                 {
                     return BadRequest();
                 }
-                var source = _mapper.Map<Source>(model);
-                if (source == null) { return BadRequest(); }
+                Source source = new Source { Project= project, Method= model.Method, Url=model.Url };
+               
                 await _dataContext.Sources.AddAsync(source);
                 await _dataContext.SaveChangesAsync();
                 return StatusCode(201);
