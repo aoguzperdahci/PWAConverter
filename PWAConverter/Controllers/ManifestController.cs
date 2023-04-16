@@ -41,7 +41,7 @@ namespace PWAConverter.Controllers
             Project project = user.Projects.Where(p => p.Id == model.ProjectId).First();
             if (project != null)
             {
-                var manifest = project.Manifest;
+                var manifest = _dataContext.Manifests.ToList().Where(x=>x.Id == model.Id).First();
                 if(manifest== null) { return NotFound(); }
                 manifest.ShortName = model.ShortName;
                 manifest.Description = model.Description;

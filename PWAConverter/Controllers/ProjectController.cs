@@ -39,7 +39,7 @@ namespace PWAConverter.Controllers
             bool isBelong = user.Projects.Any(x => x.Id == id);
             if (isBelong) {
 
-                return user.Projects.Where(x=>x.Id == id).First(); 
+                return _dataContext.Projects.Include("Sources").Include("Manifest").ToList().Where(x=>x.Id == id).First(); 
             }
             return null;
            
@@ -143,7 +143,7 @@ namespace PWAConverter.Controllers
         {
                 var project = GetByIdAsync(projectId).Result;
                 if (project == null) { return NotFound(); }
-                var manifest = project.Manifest;
+                 var manifest = project.Manifest;
                 if(manifest == null) { return NotFound(); }
                 return Ok(manifest);
         }
@@ -160,7 +160,7 @@ namespace PWAConverter.Controllers
         {
                 var project = GetByIdAsync(projectId).Result;
                 if (project == null) { return NotFound(); }
-                var sourceList =  project.Sources.ToList();
+                var sourceList =  _dataContext.Sources.ToList().Where(x=>x.Project.Id == projectId);
                 return Ok(sourceList);
             
         }

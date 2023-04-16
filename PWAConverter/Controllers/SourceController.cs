@@ -41,7 +41,7 @@ namespace PWAConverter.Controllers
             Project project = user.Projects.Where(p => p.Id == model.ProjectId).First();
             if (project != null)
             {
-                var sources = project.Sources.ToList();
+                var sources = _dataContext.Sources.ToList();
                 if (sources.Any(y => y.Url == model.Url && y.Method == model.Method))
                 {
                     return BadRequest();
