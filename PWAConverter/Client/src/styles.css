@@ -21,3 +21,15 @@ body {
 .p-blockui-document.p-blockui.p-component-overlay.p-component-overlay-enter{
   z-index: 500 !important;
 }
+
+p-tree > div.p-treenode-dragover > div > ul p-treenode li.p-treenode-droppoint{
+  height: 250%;
+}
+
+p-tree > div.p-treenode-dragover > div > ul > p-treenode li.p-treenode{
+  display: none;
+}
+
+p-tree > div.p-treenode-dragover > div{
+  overflow: hidden;
+}

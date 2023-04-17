@@ -1,1 +1,11 @@
 <p>home works!</p>
+
+<div class="card flex justify-content-center">
+  <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="files"
+    [draggableNodes]="true" [droppableNodes]="true" draggableScope="1" [droppableScope]="['1','2']"
+    (onNodeDrop)="onDrop($event)"></p-tree>
+
+  <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="files2"
+    [draggableNodes]="true" [droppableNodes]="true" draggableScope="2" droppableScope="1"
+    (onNodeDrop)="onDrop($event)"></p-tree>
+</div>
