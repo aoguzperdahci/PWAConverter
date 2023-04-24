@@ -3,9 +3,14 @@
 <div class="card flex justify-content-center">
   <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="files"
     [draggableNodes]="true" [droppableNodes]="true" draggableScope="1" [droppableScope]="['1','2']"
-    (onNodeDrop)="onDrop($event)"></p-tree>
+    (onNodeDrop)="onDrop($event,0)"></p-tree>
 
-  <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="files2"
+  <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="rootNodes"
     [draggableNodes]="true" [droppableNodes]="true" draggableScope="2" droppableScope="1"
-    (onNodeDrop)="onDrop($event)"></p-tree>
+    (onNodeDrop)="onDrop($event,1)">
+    <ng-template let-node pTemplate="default">
+      <p>{{node.label}}</p>
+    </ng-template>
+
+  </p-tree>
 </div>
