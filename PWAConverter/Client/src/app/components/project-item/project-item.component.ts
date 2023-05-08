@@ -3,6 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.component';
+import { ResourceCollectorDialogComponent } from '../resource-collector-dialog/resource-collector-dialog.component';
 
 @Component({
   selector: 'app-project-item',
@@ -11,10 +12,10 @@ import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.comp
   providers: [MessageService, ConfirmationService],
 })
 export class ProjectItemComponent {
-  resourceCollectorDialogVisible = false;
 
   @ViewChild(EditDialogComponent) editDialog!: EditDialogComponent;
   @ViewChild(ManifestDialogComponent) manifestDialog!: ManifestDialogComponent;
+  @ViewChild(ResourceCollectorDialogComponent) resourceCollectorDialog!: ResourceCollectorDialogComponent;
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -46,9 +47,8 @@ export class ProjectItemComponent {
   }
 
   showResourceCollectorDialog() {
-    this.resourceCollectorDialogVisible = true;
+    this.resourceCollectorDialog.dialogVisible = true;
   }
-
 
   showEditDialog(){
     this.editDialog.dialogVisible = true;

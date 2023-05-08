@@ -34,6 +34,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
 import { EditDialogComponent } from './components/edit-dialog/edit-dialog.component';
 import { ManifestDialogComponent } from './components/manifest-dialog/manifest-dialog.component';
+import { ResourceCollectorDialogComponent } from './components/resource-collector-dialog/resource-collector-dialog.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { ManifestDialogComponent } from './components/manifest-dialog/manifest-d
     ProjectItemComponent,
     EditDialogComponent,
     ManifestDialogComponent,
+    ResourceCollectorDialogComponent,
   ],
   imports: [
     BrowserModule,
