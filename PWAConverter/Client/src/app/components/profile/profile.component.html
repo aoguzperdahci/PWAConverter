@@ -1,1 +1,71 @@
-<p>profile works!</p>
+<div class="card flex justify-content-center">
+  <div class="m-auto">
+  <ng-template *ngIf="user$ | async as user">
+    <p>Name: {{user.name}}</p>
+    <p>Email: {{user.email}}</p>
+  </ng-template>
+  <button pButton (click)="showPasswordDialog()">Change Password</button>
+  <button pButton (click)="showEmailDialog()">Change Email</button>
+  <button pButton class="p-button-danger">Delete Account</button>
+</div>
+</div>
+
+<p-dialog header="Change Password" [(visible)]="passwordDialogVisible" [modal]="true" [style]="{width: '600px'}">
+    <div>
+      <label for="password1" class="block text-900 font-medium mb-2">Old Password</label>
+      <input type="password" id="password1" name="password1" class="form-control w-full mb-3" placeholder="Old password"
+        required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{3,}$" minlength="8" pInputText [(ngModel)]="changePasswordModel.password"
+        #password1="ngModel" [ngClass]="{'ng-invalid ng-dirty': password1.invalid && (password1.dirty || password1.touched)}">
+      <ul *ngIf="password1.invalid && (password1.dirty || password1.touched)" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+        <li *ngIf="password1.errors?.['required']">Password is required.</li>
+        <li *ngIf="password1.errors?.['pattern']">Password must contain at least one lowercase.</li>
+        <li *ngIf="password1.errors?.['pattern']">Password must contain at least one uppercase.</li>
+        <li *ngIf="password1.errors?.['pattern']">Password must contain at least one numeric.</li>
+        <li *ngIf="password1.errors?.['minlength']">Password must be at least 8 characters.</li>
+      </ul>
+
+      <label for="password2" class="block text-900 font-medium mb-2">New Password</label>
+      <input type="password" id="password2" name="password2" class="form-control w-full mb-3" placeholder="New password"
+        required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{3,}$" minlength="8" pInputText [(ngModel)]="changePasswordModel.newPassword"
+        #password2="ngModel" [ngClass]="{'ng-invalid ng-dirty': password2.invalid && (password2.dirty || password2.touched)}">
+      <ul *ngIf="password2.invalid && (password2.dirty || password2.touched)" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+        <li *ngIf="password2.errors?.['required']">Password is required.</li>
+        <li *ngIf="password2.errors?.['pattern']">Password must contain at least one lowercase.</li>
+        <li *ngIf="password2.errors?.['pattern']">Password must contain at least one uppercase.</li>
+        <li *ngIf="password2.errors?.['pattern']">Password must contain at least one numeric.</li>
+        <li *ngIf="password2.errors?.['minlength']">Password must be at least 8 characters.</li>
+      </ul>
+
+      <button pButton [disabled]="password2.invalid || password1.invalid"
+        label="Change Password" class="w-full mt-3"></button>
+    </div>
+</p-dialog>
+
+<p-dialog header="Change Email" [(visible)]="emailDialogVisible" [modal]="true" [style]="{width: '600px'}">
+  <div>
+    <label for="password" class="block text-900 font-medium mb-2">Confirmation Password</label>
+    <input type="password" id="password" name="password" class="form-control w-full mb-3" placeholder="Password"
+      required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{3,}$" minlength="8" pInputText [(ngModel)]="changeEmailModel.password"
+      #password="ngModel" [ngClass]="{'ng-invalid ng-dirty': password.invalid && (password.dirty || password.touched)}">
+    <ul *ngIf="password.invalid && (password.dirty || password.touched)" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+      <li *ngIf="password.errors?.['required']">Password is required.</li>
+      <li *ngIf="password.errors?.['pattern']">Password must contain at least one lowercase.</li>
+      <li *ngIf="password.errors?.['pattern']">Password must contain at least one uppercase.</li>
+      <li *ngIf="password.errors?.['pattern']">Password must contain at least one numeric.</li>
+      <li *ngIf="password.errors?.['minlength']">Password must be at least 8 characters.</li>
+    </ul>
+
+    <label for="email" class="block text-900 font-medium mb-2">New Email</label>
+    <input type="email" id="email" name="email" class="form-control w-full mb-3" placeholder="Email address" required
+      pattern="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$" pInputText [(ngModel)]="changeEmailModel.newEmail" #email="ngModel"
+      [ngClass]="{'ng-invalid ng-dirty': email.invalid && (email.dirty || email.touched)}">
+    <ul *ngIf="email.invalid && email.touched" class="text-base ml-4 -mt-3 mb-3 text-red-500">
+      <li *ngIf="email.errors?.['required']">Email is required.</li>
+      <li *ngIf="email.errors?.['pattern']">Email is not valid.</li>
+    </ul>
+
+    <button pButton [disabled]="email.invalid || password.invalid"
+      label="Change Email" class="w-full mt-3"></button>
+  </div>
+</p-dialog>
+
