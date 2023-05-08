@@ -37,6 +37,7 @@ import { ManifestDialogComponent } from './components/manifest-dialog/manifest-d
 import { ResourceCollectorDialogComponent } from './components/resource-collector-dialog/resource-collector-dialog.component';
 import { API_BASE_URL } from 'src/OpenApiClient';
 import { environment } from 'src/environments/environment';
+import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { environment } from 'src/environments/environment';
     EditDialogComponent,
     ManifestDialogComponent,
     ResourceCollectorDialogComponent,
+    ProjectDetailComponent,
   ],
   imports: [
     BrowserModule,
