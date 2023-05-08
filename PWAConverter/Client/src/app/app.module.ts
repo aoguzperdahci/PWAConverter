@@ -35,6 +35,8 @@ import { AuthInterceptor } from './auth.interceptor';
 import { EditDialogComponent } from './components/edit-dialog/edit-dialog.component';
 import { ManifestDialogComponent } from './components/manifest-dialog/manifest-dialog.component';
 import { ResourceCollectorDialogComponent } from './components/resource-collector-dialog/resource-collector-dialog.component';
+import { API_BASE_URL } from 'src/OpenApiClient';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,7 @@ import { ResourceCollectorDialogComponent } from './components/resource-collecto
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: API_BASE_URL, useValue: environment.API_URL },
   ],
   bootstrap: [AppComponent],
 })
