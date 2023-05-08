@@ -1,16 +1,16 @@
 <p>home works!</p>
 
 <div class="card flex justify-content-center">
-  <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="files"
-    [draggableNodes]="true" [droppableNodes]="true" draggableScope="1" [droppableScope]="['1','2']"
-    (onNodeDrop)="onDrop($event,0)"></p-tree>
 
-  <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="rootNodes"
-    [draggableNodes]="true" [droppableNodes]="true" draggableScope="2" droppableScope="1"
-    (onNodeDrop)="onDrop($event,1)">
+  <ng-template ngFor let-item [ngForOf]="containers" let-i="index">
+    <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="item.sourceTree"
+    [draggableNodes]="true" [droppableNodes]="true" draggableScope="all" droppableScope="all"
+    (onNodeDrop)="onDrop($event,i)">
     <ng-template let-node pTemplate="default">
       <p>{{node.label}}</p>
     </ng-template>
-
   </p-tree>
+  </ng-template>
+
+
 </div>
