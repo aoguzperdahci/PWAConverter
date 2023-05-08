@@ -2,6 +2,7 @@ import { HttpEvent } from '@angular/common/http';
 import { Component, ViewChild } from '@angular/core';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
+import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.component';
 
 @Component({
   selector: 'app-project-item',
@@ -10,12 +11,10 @@ import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
   providers: [MessageService, ConfirmationService],
 })
 export class ProjectItemComponent {
-  manifestDialogVisible = false;
   resourceCollectorDialogVisible = false;
-  value = "";
-  options = ["1111111", "2222222", "33333333"]
 
   @ViewChild(EditDialogComponent) editDialog!: EditDialogComponent;
+  @ViewChild(ManifestDialogComponent) manifestDialog!: ManifestDialogComponent;
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -56,7 +55,7 @@ export class ProjectItemComponent {
   }
 
   showManifestDialog(){
-    this.manifestDialogVisible = true;
+    this.manifestDialog.dialogVisible = true;
   }
 
 }

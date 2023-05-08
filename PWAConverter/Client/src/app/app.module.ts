@@ -33,6 +33,7 @@ import { ProjectItemComponent } from './components/project-item/project-item.com
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
 import { EditDialogComponent } from './components/edit-dialog/edit-dialog.component';
+import { ManifestDialogComponent } from './components/manifest-dialog/manifest-dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { EditDialogComponent } from './components/edit-dialog/edit-dialog.compon
     ProfileComponent,
     ProjectItemComponent,
     EditDialogComponent,
+    ManifestDialogComponent,
   ],
   imports: [
     BrowserModule,
