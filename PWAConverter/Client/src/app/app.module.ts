@@ -32,6 +32,7 @@ import { DragDropModule } from 'primeng/dragdrop';
 import { ProjectItemComponent } from './components/project-item/project-item.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
+import { EditDialogComponent } from './components/edit-dialog/edit-dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { AuthInterceptor } from './auth.interceptor';
     ProjectsComponent,
     ProfileComponent,
     ProjectItemComponent,
+    EditDialogComponent,
   ],
   imports: [
     BrowserModule,

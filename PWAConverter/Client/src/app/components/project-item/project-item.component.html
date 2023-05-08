@@ -20,28 +20,7 @@
   </div>
 </div>
 
-<p-dialog header="Edit" [(visible)]="editDialogVisible" [modal]="true" [style]="{width: '600px'}">
-  <div class="flex justify-content-center flex-wrap">
-    <div class="icon-container w-5 shadow-2 border-round">
-      <img class="icon-image"
-        [src]="'https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder-1024x1024.png'"
-        [alt]="'placeholder-1024x1024'" />
-      <div class="icon-overlay">
-        <div class="icon-upload">
-          <i class="pi pi-upload text-4xl"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full flex flex-wrap align-items-center justify-content-start mt-4">
-      <div class="w-2"></div>
-      <label for="name1" class="block text-900 font-medium mr-2">Name</label>
-      <input id="name1" type="text" placeholder="Name" pInputText class="align-self-center w-6">
-    </div>
-
-    <button pButton label="Save" class="w-9 mt-4"></button>
-  </div>
-</p-dialog>
+<app-edit-dialog #editDialog></app-edit-dialog>
 
 <p-dialog header="Manifest" [(visible)]="manifestDialogVisible" [modal]="true" [style]="{width: '700px'}">
 
