@@ -6,6 +6,8 @@ using PWAConverter.Data;
 using PWAConverter.Entities;
 using PWAConverter.Models.Manifest;
 using PWAConverter.Models.Project_;
+using PWAConverter.MongoModels;
+using PWAConverter.Services.Interfaces;
 using System.Security.Claims;
 
 namespace PWAConverter.Controllers
@@ -17,10 +19,12 @@ namespace PWAConverter.Controllers
     {
         private PWAConverterContext _dataContext;
         private readonly IMapper _mapper;
-        public ProjectController(PWAConverterContext dataContext, IMapper mapper)
+        IIconService _iconService;
+        public ProjectController(PWAConverterContext dataContext, IMapper mapper, IIconService iconService)
         {
             _dataContext = dataContext;
             _mapper = mapper;
+            _iconService = iconService;
         }
         /// <summary>
         /// Get project 
@@ -97,18 +101,46 @@ namespace PWAConverter.Controllers
             await _dataContext.Manifests.AddAsync(manifest);
             await _dataContext.SaveChangesAsync();
 
-            Project project = new Project{ 
-                IconId = projectModel.IconId,
-                Name = projectModel.Name,
-                ProjectDetailId= projectModel.ProjectDetailId,
-                Manifest = manifest,
-                User = user,
-            };
+            if (projectModel.File.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    projectModel.File.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    var icon = new Icon
+                    {
+                        Image = fileBytes,
+                        Id = ""
+                    };
+                    
+                    icon.Id = _iconService.SaveIcon(icon);
 
-            await _dataContext.Projects.AddAsync(project);
-            await _dataContext.SaveChangesAsync();
-            return StatusCode(201);
+                    Project project = new Project
+                    {
+                        IconId = icon.Id,
+                        Name = projectModel.Name,
+                        Manifest = manifest,
+                        User = user,
+                    };
+                    await _dataContext.Projects.AddAsync(project);
+                    await _dataContext.SaveChangesAsync();
+                    return StatusCode(201);
+                }
 
+            }
+            else
+            {
+                Project project = new Project
+                {
+                    Name = projectModel.Name,
+                    Manifest = manifest,
+                    User = user,
+                };
+                await _dataContext.Projects.AddAsync(project);
+                await _dataContext.SaveChangesAsync();
+                return StatusCode(201);
+            }
+           
         }
         /// <summary>
         /// Update project
@@ -169,6 +201,14 @@ namespace PWAConverter.Controllers
         {
             var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
             return Guid.Parse(claim.Value);
+        }
+
+        [HttpGet("getIcon")]
+        public IActionResult GetIcon(Guid projectId)
+        {
+            var icon = _iconService.GetIcon(projectId);
+            icon.Image = _iconService.GetImage(Convert.ToBase64String(icon.Image));
+            return Ok(icon);
         }
 
     }

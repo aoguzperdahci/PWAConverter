@@ -1,0 +1,31 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using PWAConverter.Models;
+
+namespace PWAConverter.Data
+{
+    public class PWAConverterMongoContext : IPWAConverterMongoContext
+    {
+        private IMongoDatabase _db { get; set; }
+        private readonly IConfiguration _configuration;
+        const string connectionUri = "mongodb+srv://pwamongo:pwamongo123@pwaconvertermongo.ebcbq7g.mongodb.net/?retryWrites=true&w=majority";
+
+        public PWAConverterMongoContext(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            var settings = MongoClientSettings.FromConnectionString(connectionUri);
+            
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+            
+            var client = new MongoClient(settings);
+            
+            _db = client.GetDatabase(_configuration.GetSection("MongoSettings:DatabaseName").Value); ;
+            
+        }
+        public IMongoCollection<T> GetCollection<T>(string name)
+        {
+            return _db.GetCollection<T>(name);
+        }
+    }
+}

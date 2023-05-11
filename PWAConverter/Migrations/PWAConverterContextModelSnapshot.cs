@@ -60,7 +60,7 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Manifests");
+                    b.ToTable("Manifests", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
@@ -93,7 +93,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>
@@ -116,7 +116,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Sources");
+                    b.ToTable("Sources", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.User", b =>
@@ -143,7 +143,7 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
