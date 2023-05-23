@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using PWAConverter.Data;
 using PWAConverter.Entities;
 using PWAConverter.Models.Manifest;
@@ -20,11 +22,18 @@ namespace PWAConverter.Controllers
         private PWAConverterContext _dataContext;
         private readonly IMapper _mapper;
         IIconService _iconService;
-        public ProjectController(PWAConverterContext dataContext, IMapper mapper, IIconService iconService)
+        protected IMongoCollection<BsonDocument> _iconCollection;
+        protected IMongoCollection<BsonDocument> _projectDetailCollection;
+        private readonly IPWAConverterMongoContext _mongoContext;
+
+        public ProjectController(PWAConverterContext dataContext, IMapper mapper, IIconService iconService, IPWAConverterMongoContext mongoContext)
         {
             _dataContext = dataContext;
             _mapper = mapper;
             _iconService = iconService;
+            _mongoContext = mongoContext;
+            _projectDetailCollection = _mongoContext.GetCollection<BsonDocument>("ProjectDetail"); 
+            _iconCollection = _mongoContext.GetCollection<BsonDocument>("Icon"); 
         }
         /// <summary>
         /// Get project 
@@ -48,7 +57,7 @@ namespace PWAConverter.Controllers
             return null;
            
         }
-
+        
         /// <summary>
         /// The method allows user to delete one of its projects.
         /// </summary>
@@ -64,14 +73,17 @@ namespace PWAConverter.Controllers
             var project = GetByIdAsync(id).Result;
             if(project == null) { return NotFound(); }
                 _dataContext.Projects.Remove(project);
-                
-                if (project.Manifest != null) {
+                var deleteFilter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(project.IconId));
+                await _projectDetailCollection.DeleteOneAsync(deleteFilter);
+                await _iconCollection.DeleteOneAsync(deleteFilter);
+            if (project.Manifest != null) {
                     _dataContext.Manifests.Remove(project.Manifest);
                     await _dataContext.SaveChangesAsync();
                     return Ok();
                 }
             return BadRequest();
         }
+        
         /// <summary>
         /// Create a project
         /// </summary>
@@ -107,21 +119,21 @@ namespace PWAConverter.Controllers
                 {
                     projectModel.File.CopyTo(ms);
                     var fileBytes = ms.ToArray();
-                    var icon = new Icon
+                    var document = new BsonDocument
                     {
-                        Image = fileBytes,
-                        Id = ""
+                        {"Image",fileBytes },
+                        {"ProjectId","" }
                     };
+                    var id = _iconService.SaveIcon(document);
                     
-                    icon.Id = _iconService.SaveIcon(icon);
-
                     Project project = new Project
                     {
-                        IconId = icon.Id,
+                        IconId = id,
                         Name = projectModel.Name,
                         Manifest = manifest,
                         User = user,
                     };
+                    document.Set("ProjectId", project.Id);
                     await _dataContext.Projects.AddAsync(project);
                     await _dataContext.SaveChangesAsync();
                     return StatusCode(201);
@@ -142,6 +154,7 @@ namespace PWAConverter.Controllers
             }
            
         }
+        
         /// <summary>
         /// Update project
         /// </summary>
@@ -151,17 +164,47 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]    
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateAsync(UpdateProjectModel model)
         {
                 var project = GetByIdAsync(model.Id).Result;
                 if (project == null) { return NotFound(); }
+                
+            if (model.File.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    model.File.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    var document = new BsonDocument
+                    {
+                        {"Image",fileBytes },
+                        {"ProjectId","" }
+                    };
+                    var id = _iconService.SaveIcon(document);
+
+                    project.Name = model.Name != null ? model.Name : project.Name;
+                    project.IconId =  id;
+                    project.ProjectDetailId = model.ProjectDetailId != null ? model.ProjectDetailId : project.ProjectDetailId;
+
+                    _dataContext.Projects.Update(project);
+                    await _dataContext.SaveChangesAsync();
+                    return Ok();
+                }
+
+            }
+            else
+            {
                 project.Name = model.Name != null ? model.Name : project.Name;
-                project.IconId = model.IconId != null ? model.IconId : project.IconId ;
+                project.IconId = model.IconId != null ? model.IconId : project.IconId;
                 project.ProjectDetailId = model.ProjectDetailId != null ? model.ProjectDetailId : project.ProjectDetailId;
-                 _dataContext.Projects.Update(project);
+
+                _dataContext.Projects.Update(project);
                 await _dataContext.SaveChangesAsync();
                 return Ok();
+            }
         }
+        
         /// <summary>
         /// Get manifest of the project
         /// </summary>
@@ -203,12 +246,24 @@ namespace PWAConverter.Controllers
             return Guid.Parse(claim.Value);
         }
 
+        /// <summary>
+        /// Gets the icon of project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns>Status codes</returns>
         [HttpGet("getIcon")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetIcon(Guid projectId)
         {
+            var project = GetByIdAsync(projectId).Result;
+            if (project == null) { return NotFound(); }
             var icon = _iconService.GetIcon(projectId);
-            icon.Image = _iconService.GetImage(Convert.ToBase64String(icon.Image));
-            return Ok(icon);
+            if(icon == null) { return BadRequest(); }
+            var image = _iconService.GetImage(icon["Image"].ToString());
+            return Ok(image);
         }
 
     }

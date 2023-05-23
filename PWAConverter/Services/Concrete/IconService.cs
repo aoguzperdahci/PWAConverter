@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using PWAConverter.Data;
 using PWAConverter.Entities;
 using PWAConverter.MongoModels;
@@ -9,32 +10,35 @@ namespace PWAConverter.Services.Concrete
     public class IconService : IIconService
     {
         private readonly IPWAConverterMongoContext _mongoContext;
-        protected IMongoCollection<Icon> _iconCollection;
+        protected IMongoCollection<BsonDocument> _iconCollection;
 
         public IconService(IPWAConverterMongoContext mongoContext)
         {
             _mongoContext = mongoContext;
-            _iconCollection = _mongoContext.GetCollection<Icon>(typeof(Icon).Name);
+            _iconCollection = _mongoContext.GetCollection<BsonDocument>("Icon");
         }
 
-        public Icon GetIcon(Guid projectId)
+        public BsonDocument GetIcon(Guid projectId)
         {
-            return _iconCollection.Find(x=>x.ProjectId == projectId).ToList().FirstOrDefault();
+            var filter = Builders<BsonDocument>.Filter.Eq("ProjectId", projectId);
+            var document = _iconCollection.Find(filter).FirstOrDefault();
+            return document;
         }
 
-        public string SaveIcon(Icon icon)
+        public string SaveIcon(BsonDocument icon)
         {
-            var iconObj = _iconCollection.Find(x=>x.Id== icon.Id).FirstOrDefault();
-            if (iconObj != null)
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", icon["_id"]);
+            var iconObj = _iconCollection.Find(filter).FirstOrDefault();
+            if (iconObj == null)
             {
-                _iconCollection.InsertOne(icon);
+                _iconCollection.InsertOne(iconObj);
                 
             }
             else
             {
-                _iconCollection.ReplaceOne(x => x.Id == icon.Id, icon);
+                _iconCollection.ReplaceOne(iconObj, icon);
             }
-            return icon.Id;
+            return icon["_id"].ToString();
         }
         public byte[] GetImage(string sBase64string)
         {
@@ -46,6 +50,6 @@ namespace PWAConverter.Services.Concrete
             return bytes;
         }
 
-      
+       
     }
 }

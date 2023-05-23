@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using PWAConverter.Models;
 
@@ -20,12 +21,12 @@ namespace PWAConverter.Data
             
             var client = new MongoClient(settings);
             
-            _db = client.GetDatabase(_configuration.GetSection("MongoSettings:DatabaseName").Value); ;
+            _db = client.GetDatabase(_configuration.GetSection("MongoSettings:DatabaseName").Value); 
             
         }
-        public IMongoCollection<T> GetCollection<T>(string name)
+        public IMongoCollection<BsonDocument> GetCollection<BsonDocument>(string name)
         {
-            return _db.GetCollection<T>(name);
+            return _db.GetCollection<BsonDocument>(name);
         }
     }
 }

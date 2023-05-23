@@ -10,13 +10,13 @@ namespace PWAConverter.MongoModels
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public BsonDocument CacheStorages { get; set; }
         public BsonDocument AdditionalFeatures { get;set; }
-        public Project Project { get; set; }
+        public string ProjectId { get; set; }
 
-        public ProjectDetail(BsonDocument cacheStorages, BsonDocument additionalFeatures, Project project)
+        public ProjectDetail(BsonDocument cacheStorages, BsonDocument additionalFeatures, string projectId)
         {
             CacheStorages = cacheStorages;
             AdditionalFeatures = additionalFeatures;
-            Project = project;
+            ProjectId = projectId;
         }
     }
 }
