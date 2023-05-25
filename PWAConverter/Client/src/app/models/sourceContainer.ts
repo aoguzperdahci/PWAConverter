@@ -8,4 +8,6 @@ export interface SourceContainer {
   cacheStrategy: CacheStrategy;
   sourceList: string[];
   sourceTree: TreeNode<SourceData>[];
+  rules: string[];
+  maxSize?: number;
 }

@@ -33,3 +33,11 @@ p-tree > div.p-treenode-dragover > div > ul > p-treenode li.p-treenode{
 p-tree > div.p-treenode-dragover > div{
   overflow: hidden;
 }
+
+body > app-root > div > app-project-detail > div > p-card > div > div{
+  padding: 0 !important;
+}
+
+body > app-root > div > app-project-detail > div > p-card > div > div > div{
+  padding: 0 !important;
+}

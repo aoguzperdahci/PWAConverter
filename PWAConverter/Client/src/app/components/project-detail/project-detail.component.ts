@@ -2,7 +2,10 @@ import { Component } from '@angular/core';
 import { TreeDragDropService, TreeNode } from 'primeng/api';
 import { SourceContainer } from 'src/app/models/sourceContainer';
 import { SourceData } from 'src/app/models/sourceData';
-import { CacheStrategy } from "src/app/models/cacheStrategy";
+import { CacheStrategy } from 'src/app/models/cacheStrategy';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { ServiceWorkerGenerator } from './serviceWorkerGenerator';
 
 @Component({
   selector: 'app-project-detail',
@@ -41,7 +44,7 @@ export class ProjectDetailComponent {
     'https://www.youtube.com/10000/20001/30003',
     'https://www.youtube.com/10000/20001/30004',
     // "http://localhost:4200/",
-    "http://localhost:4200/10000"
+    'http://localhost:4200/10000',
   ];
 
   urls2 = [
@@ -72,26 +75,44 @@ export class ProjectDetailComponent {
     'https://www.youtube.com/11000/20001/30001',
     'https://www.youtube.com/11000/20001/30002',
     'https://www.youtube.com/11000/20001/30003',
-    'https://www.youtube.com/11000/20001/30004'
+    'https://www.youtube.com/11000/20001/30004',
   ];
 
-
   containers: SourceContainer[] = [];
+  dialogVisible = false;
+  selectedContainer: SourceContainer | null = null;
+  cacheOptions = [CacheStrategy.cacheFirst, CacheStrategy.networkFirst];
 
-  constructor(){
-    const container1 = {name: "v1", containerId: 0, cacheStrategy: CacheStrategy.cacheFirst, sourceList: this.urls1, sourceTree: []} as SourceContainer;
-    const container2 = {name: "v2", containerId: 1, cacheStrategy: CacheStrategy.cacheFirst, sourceList: this.urls2, sourceTree: []} as SourceContainer;
+  constructor() {
+    const container1 = {
+      name: 'v1',
+      containerId: 0,
+      cacheStrategy: CacheStrategy.cacheFirst,
+      sourceList: this.urls1,
+      sourceTree: [],
+      rules: [],
+      maxSize: 100,
+    } as SourceContainer;
+    const container2 = {
+      name: 'v2',
+      containerId: 1,
+      cacheStrategy: CacheStrategy.cacheFirst,
+      sourceList: this.urls2,
+      sourceTree: [],
+      rules: [],
+      maxSize: 100,
+    } as SourceContainer;
     this.mapSourceToTree(container1);
     this.mapSourceToTree(container2);
     this.containers.push(container1);
     this.containers.push(container2);
-
   }
 
-  mapSourceToTree(sourceContainer: SourceContainer){
+  mapSourceToTree(sourceContainer: SourceContainer) {
     sourceContainer.sourceTree = [];
     for (let url of sourceContainer.sourceList) {
-      url = url[url.length - 1] === '/' ? url.substring(0, url.length - 1) : url;
+      url =
+        url[url.length - 1] === '/' ? url.substring(0, url.length - 1) : url;
       let treeNodeList = sourceContainer.sourceTree;
       let prevIndex = -1;
       let index = 7;
@@ -121,7 +142,11 @@ export class ProjectDetailComponent {
         if (!foundFlag) {
           const node = {
             label: label,
-            data: {containerId: sourceContainer.containerId, url: data, method: method},
+            data: {
+              containerId: sourceContainer.containerId,
+              url: data,
+              method: method,
+            },
             children: [],
           } as TreeNode<SourceData>;
           treeNodeList.push(node);
@@ -136,7 +161,7 @@ export class ProjectDetailComponent {
     const containerTo = this.containers[containerToId];
     const startUrl = event.dragNode.data.url;
 
-    containerFrom.sourceList = containerFrom.sourceList.filter(element => {
+    containerFrom.sourceList = containerFrom.sourceList.filter((element) => {
       if (element.startsWith(startUrl)) {
         containerTo.sourceList.push(element);
         return false;
@@ -148,4 +173,76 @@ export class ProjectDetailComponent {
     this.mapSourceToTree(containerFrom);
     this.mapSourceToTree(containerTo);
   }
+
+  generateServiceWorker() {
+    this.mapSourceToRules();
+    // console.log(JSON.stringify(this.containers));
+    const codeGenerator = new ServiceWorkerGenerator();
+    codeGenerator.generate(this.containers);
+  //   const zip = new JSZip();
+  //   zip.file("nested/hello.txt", "Hello World\n");
+  //   zip.generateAsync({type:"blob"})
+  //   .then((content) => {
+  //     saveAs(content, "example.zip");
+  // });
+
+
+
+  }
+
+  mapSourceToRules() {
+    for (let i = 0; i < this.containers.length; i++) {
+      const element = this.containers[i];
+
+      for (const url of element.sourceList) {
+        if (element.rules.some((r) => url.startsWith(r))) {
+          continue;
+        }
+
+        let currentContainer = 0;
+        let index = url.indexOf('/', 8);
+        let currentRule = url.substring(0, index);
+        while (currentContainer < this.containers.length) {
+          if (currentContainer === i) {
+            currentContainer++;
+            continue;
+          }
+
+          const conflictFound = this.containers[
+            currentContainer
+          ].sourceList.some((u) => u.startsWith(currentRule));
+
+          if (conflictFound) {
+            index = url.indexOf('/', index + 1);
+            if (index === -1) {
+              currentRule = url;
+              break;
+            } else {
+              currentRule = url.substring(0, index);
+              currentContainer = 0;
+            }
+          } else {
+            if (currentContainer < this.containers.length) {
+              currentContainer++;
+            } else {
+              break;
+            }
+          }
+        }
+
+        element.rules.push(currentRule);
+      }
+    }
+  }
+
+  showSettingsDialog(container:SourceContainer){
+    this.selectedContainer = container;
+    this.dialogVisible = true;
+  }
+
+  addNewContainer(){
+    const newContainer = { name: "New Container", cacheStrategy: CacheStrategy.cacheFirst, containerId: this.containers.length, rules: [], sourceList: [], sourceTree: []} as SourceContainer;
+    this.containers.push(newContainer);
+  }
 }
+

@@ -1,4 +1,4 @@
 export enum CacheStrategy {
-  cacheFirst,
-  networkFirst
+  cacheFirst = "Cache First",
+  networkFirst = "Network First"
 }

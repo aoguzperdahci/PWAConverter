@@ -1,13 +1,74 @@
-<div class="card flex justify-content-center">
+<div class="flex justify-content-between">
+  <p class="text-4xl m-75">Example Project</p>
+
+  <span class="p-buttonset m-75">
+    <button pButton icon="pi pi-file" label="Generate Manifest" class="p-button-secondary"></button>
+    <button pButton (click)="addNewContainer()" icon="pi pi-paperclip" label="Generate Resource Collector" class="p-button-secondary"></button>
+  </span>
+</div>
+
+<div class="flex justify-content-between">
+  <p class="text-2xl m-75">Cache Containers:</p>
+
+  <button pButton (click)="addNewContainer()" icon="pi pi-plus" label="New Container" class="m-75"></button>
+</div>
+
+
+<div class="card flex flex-wrap justify-content-start">
 
   <ng-template ngFor let-item [ngForOf]="containers" let-i="index">
-    <p-tree class="w-full md:w-30rem" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="item.sourceTree"
-    [draggableNodes]="true" [droppableNodes]="true" draggableScope="all" droppableScope="all"
-    (onNodeDrop)="onDrop($event,i)">
-    <ng-template let-node pTemplate="default">
-      <p>{{node.label}}</p>
-    </ng-template>
-  </p-tree>
+    <p-card class="w-full md:w-27rem ml-1">
+      <div class="w-full text-center line-height-4 py-2">
+        <span class="vertical-align-text-top text-2xl">{{item.name}}</span>
+        <button pButton icon="pi pi-cog" pTooltip="Settings" tooltipPosition="bottom"
+          class="p-button-rounded p-button-secondary p-button-text ml-1" (click)="showSettingsDialog(item)"></button>
+      </div>
+
+      <p-tree class="w-full" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="item.sourceTree"
+        [draggableNodes]="true" [droppableNodes]="true" draggableScope="all" droppableScope="all"
+        (onNodeDrop)="onDrop($event,i)">
+        <ng-template let-node pTemplate="default">
+          <p>{{node.label}}</p>
+        </ng-template>
+      </p-tree>
+
+    </p-card>
   </ng-template>
 
 </div>
+<span class="p-buttonset flex justify-content-center my-3">
+
+  <button pButton icon="pi pi-tags" label="Additional Features" class="p-button-warning"></button>
+  <button pButton (click)="generateServiceWorker()" icon="pi pi-wrench" label="Generate Service Worker"
+  class="p-button-help"></button>
+  <button pButton icon="pi pi-save" label="Save Changes" class="p-button-success"></button>
+</span>
+
+<p-dialog header="Settings" [(visible)]="dialogVisible" [modal]="true" [style]="{width: '600px', height: '400px'}">
+  <div class="flex justify-content-start flex-wrap" *ngIf="selectedContainer">
+
+    <div class="flex flex-column gap-2 mt-3 ml-5">
+      <label htmlFor="container-name">Container Name</label>
+      <input pInputText id="container-name" [(ngModel)]="selectedContainer.name" />
+    </div>
+
+    <div class="flex gap-2 mt-3 ml-7">
+      <div class="flex flex-column gap-2">
+        <label htmlFor="cache-strategy">Cache Strategy</label>
+        <p-dropdown id="cache-strategy" [options]="cacheOptions"
+          [(ngModel)]="selectedContainer.cacheStrategy"></p-dropdown>
+      </div>
+    </div>
+
+    <div class="flex flex-column gap-2 mt-3 ml-5" *ngIf="selectedContainer.cacheStrategy === cacheOptions[1]">
+      <label htmlFor="max-size">Max Size</label>
+      <p-inputNumber id="max-size" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="1000"
+        [(ngModel)]="selectedContainer.maxSize" />
+    </div>
+
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Delete" styleClass="p-button-raised p-button-danger"></p-button>
+  </ng-template>
+</p-dialog>

@@ -29,6 +29,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { TreeModule } from 'primeng/tree';
 import { DragDropModule } from 'primeng/dragdrop';
+import { CardModule } from 'primeng/card';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { ProjectItemComponent } from './components/project-item/project-item.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
@@ -79,6 +81,8 @@ import { ProjectDetailComponent } from './components/project-detail/project-deta
     ColorPickerModule,
     TreeModule,
     DragDropModule,
+    CardModule,
+    InputNumberModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
