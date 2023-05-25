@@ -60,7 +60,7 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Manifests");
+                    b.ToTable("Manifests", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
@@ -69,7 +69,7 @@ namespace PWAConverter.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Icon")
+                    b.Property<string>("IconId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -80,11 +80,11 @@ namespace PWAConverter.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProjectDetail")
+                    b.Property<string>("ProjectDetailId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -93,7 +93,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>
@@ -116,7 +116,7 @@ namespace PWAConverter.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Sources");
+                    b.ToTable("Sources", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.User", b =>
@@ -143,7 +143,7 @@ namespace PWAConverter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Project", b =>
@@ -154,11 +154,15 @@ namespace PWAConverter.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PWAConverter.Entities.User", null)
+                    b.HasOne("PWAConverter.Entities.User", "User")
                         .WithMany("Projects")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Manifest");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PWAConverter.Entities.Source", b =>

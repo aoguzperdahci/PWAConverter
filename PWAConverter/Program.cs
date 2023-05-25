@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 // Add services to the container.
 
-services.AddControllers();
+services.AddControllers().AddNewtonsoftJson(opt=>opt.SerializerSettings.ReferenceLoopHandling= Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 services.AddEndpointsApiExplorer();
 services.AddOpenApiDocument(options =>
 {
@@ -47,6 +47,8 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 services.AddDbContext<PWAConverterContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+services.AddSingleton<IPWAConverterMongoContext, PWAConverterMongoContext>();
+
 // configure automapper with all automapper profiles from this assembly
 services.AddAutoMapper(typeof(Program));
 
@@ -63,6 +65,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
 services.AddScoped<IJwtUtils, JwtUtils>();
 services.AddScoped<IUserService, UserService>();
 services.AddScoped<IAuthService, AuthService>();
+services.AddScoped<IIconService, IconService>();
 services.AddHttpContextAccessor();
 var app = builder.Build();
 
