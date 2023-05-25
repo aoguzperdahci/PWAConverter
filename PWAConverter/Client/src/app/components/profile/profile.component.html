@@ -1,9 +1,9 @@
 <div class="card flex justify-content-center">
   <div class="m-auto">
-  <ng-template *ngIf="user$ | async as user">
+  <div *ngIf="user$ | async as user">
     <p>Name: {{user.name}}</p>
     <p>Email: {{user.email}}</p>
-  </ng-template>
+  </div>
   <button pButton (click)="showPasswordDialog()">Change Password</button>
   <button pButton (click)="showEmailDialog()">Change Email</button>
   <button pButton class="p-button-danger">Delete Account</button>
