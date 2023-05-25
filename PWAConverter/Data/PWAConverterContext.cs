@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 using PWAConverter.Entities;
 using System.Reflection.Emit;
@@ -18,8 +19,9 @@ namespace PWAConverter.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=tcp:pwaconverter.database.windows.net,1433;Initial Catalog=PWAConverter;Persist Security Info=False;User ID=pwadbserver;Password=bitirmetezibitartik2023__;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Database=PWAConverter;");
+            optionsBuilder.UseSqlServer(@"Data Source=localhost; Initial Catalog=PWAConverter; Integrated Security=true");
         }
+       
     }
     }
 

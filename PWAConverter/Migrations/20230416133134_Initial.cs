@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PWAConverter.Migrations
 {
-    public partial class FirstMig : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,6 +16,8 @@ namespace PWAConverter.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisplayMode = table.Column<int>(type: "int", nullable: false),
+                    Orientation = table.Column<int>(type: "int", nullable: false),
                     BackGroundColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ThemeColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -47,10 +49,10 @@ namespace PWAConverter.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProjectDetail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ManifestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    IconId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProjectDetailId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ManifestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,7 +67,8 @@ namespace PWAConverter.Migrations
                         name: "FK_Projects_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,6 +77,7 @@ namespace PWAConverter.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Method = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>

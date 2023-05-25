@@ -6,6 +6,7 @@ using PWAConverter.Models.User;
 using PWAConverter.Helpers;
 using PWAConverter.Services.Interfaces;
 using PWAConverter.Models.Auth;
+using System.Security.Claims;
 
 namespace PWAConverter.Services.Concrete
 {
@@ -34,7 +35,8 @@ namespace PWAConverter.Services.Concrete
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            return await _dataContext.Users.FindAsync(id);
+            return _dataContext.Users.Include("Projects").ToList().Where(x => x.Id == id).First();
+
         }
 
         public async Task<bool> UpdatePasswordAsync(Guid id, UpdatePasswordRequest model)
