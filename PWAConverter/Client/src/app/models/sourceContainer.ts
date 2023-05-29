@@ -3,8 +3,8 @@ import { CacheStrategy } from "./cacheStrategy";
 import { SourceData } from "./sourceData";
 
 export interface SourceContainer {
-  name: string;
   containerId: number;
+  name: string;
   cacheStrategy: CacheStrategy;
   sourceList: string[];
   sourceTree: TreeNode<SourceData>[];

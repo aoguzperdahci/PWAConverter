@@ -1,111 +1,96 @@
-import { Component } from '@angular/core';
-import { TreeDragDropService, TreeNode } from 'primeng/api';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MessageService, TreeDragDropService, TreeNode } from 'primeng/api';
 import { SourceContainer } from 'src/app/models/sourceContainer';
 import { SourceData } from 'src/app/models/sourceData';
 import { CacheStrategy } from 'src/app/models/cacheStrategy';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { ServiceWorkerGenerator } from './serviceWorkerGenerator';
+import { ActivatedRoute } from '@angular/router';
+import {
+  GetProjectResponse,
+  GetSourceResponse,
+  ProjectClient,
+  ProjectDetailClient,
+  SourceClient,
+  UpdateProjectDetailModel,
+} from 'src/OpenApiClient';
+import { ProjectDetail } from 'src/app/models/projectDetail';
+import { ResourceCollectorDialogComponent } from '../resource-collector-dialog/resource-collector-dialog.component';
+import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.component';
+import { AdditionalFeatures } from 'src/app/models/additionalFeatures';
 
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.css'],
-  providers: [TreeDragDropService],
+  providers: [TreeDragDropService, MessageService],
 })
-export class ProjectDetailComponent {
-  urls1 = [
-    'https://www.youtube.com/10000/20000/',
-    'https://www.youtube.com/10000/20001',
-    'https://www.youtube.com/10000/20002',
-    'https://www.youtube.com/10000/20003',
-    'https://www.youtube.com/10000/20004',
-    'https://www.youtube.com/10000/20006',
-    'https://www.youtube.com/10000/20007',
-    'https://www.youtube.com/10000/20008',
-    'https://www.youtube.com/10001/20000',
-    'https://www.youtube.com/10000/20005',
-    'https://www.youtube.com/10000/20000/30001',
-    'https://www.youtube.com/10001/20001',
-    'https://www.youtube.com/10001/20002',
-    'https://www.youtube.com/10001/20003',
-    'https://www.youtube.com/10001/20004',
-    'https://www.youtube.com/10001/20005',
-    'https://www.youtube.com/10001/20006',
-    'https://www.youtube.com/10000/20000/30002',
-    'https://www.youtube.com/10001/20007',
-    'https://www.youtube.com/10001/20008',
-    'https://www.youtube.com/10000/20000/30000',
-    'https://www.youtube.com/10000/20000/30003',
-    'https://www.youtube.com/10000/20000/30004',
-    'https://www.youtube.com/10000/20001/30000',
-    'https://www.youtube.com/10000/20001/30001',
-    'https://www.youtube.com/10000/20001/30002',
-    'https://www.youtube.com/10000/20001/30003',
-    'https://www.youtube.com/10000/20001/30004',
-    // "http://localhost:4200/",
-    'http://localhost:4200/10000',
-  ];
-
-  urls2 = [
-    'https://www.youtube.com/11000/20000/',
-    'https://www.youtube.com/11000/20001',
-    'https://www.youtube.com/11000/20002',
-    'https://www.youtube.com/11000/20003',
-    'https://www.youtube.com/11000/20004',
-    'https://www.youtube.com/11000/20006',
-    'https://www.youtube.com/11000/20007',
-    'https://www.youtube.com/11000/20008',
-    'https://www.youtube.com/11001/20000',
-    'https://www.youtube.com/11000/20005',
-    'https://www.youtube.com/11000/20000/30001',
-    'https://www.youtube.com/11001/20001',
-    'https://www.youtube.com/11001/20002',
-    'https://www.youtube.com/11001/20003',
-    'https://www.youtube.com/11001/20004',
-    'https://www.youtube.com/11001/20005',
-    'https://www.youtube.com/11001/20006',
-    'https://www.youtube.com/11000/20000/30002',
-    'https://www.youtube.com/11001/20007',
-    'https://www.youtube.com/11001/20008',
-    'https://www.youtube.com/11000/20000/30000',
-    'https://www.youtube.com/11000/20000/30003',
-    'https://www.youtube.com/11000/20000/30004',
-    'https://www.youtube.com/11000/20001/30000',
-    'https://www.youtube.com/11000/20001/30001',
-    'https://www.youtube.com/11000/20001/30002',
-    'https://www.youtube.com/11000/20001/30003',
-    'https://www.youtube.com/11000/20001/30004',
-  ];
-
-  containers: SourceContainer[] = [];
-  dialogVisible = false;
+export class ProjectDetailComponent implements OnInit {
+  project: GetProjectResponse = {} as GetProjectResponse;
+  projectDetail: ProjectDetail = {} as ProjectDetail;
+  sources: GetSourceResponse[] = [];
+  projectId = '';
+  settingsDialogVisible = false;
+  additionalFeaturesDialogVisible = false;
   selectedContainer: SourceContainer | null = null;
-  cacheOptions = [CacheStrategy.cacheFirst, CacheStrategy.networkFirst];
+  cacheOptions = [
+    CacheStrategy.cacheFirst,
+    CacheStrategy.networkFirst,
+    CacheStrategy.preCache,
+    CacheStrategy.ignore,
+  ];
 
-  constructor() {
-    const container1 = {
-      name: 'v1',
-      containerId: 0,
-      cacheStrategy: CacheStrategy.cacheFirst,
-      sourceList: this.urls1,
-      sourceTree: [],
-      rules: [],
-      maxSize: 100,
-    } as SourceContainer;
-    const container2 = {
-      name: 'v2',
-      containerId: 1,
-      cacheStrategy: CacheStrategy.cacheFirst,
-      sourceList: this.urls2,
-      sourceTree: [],
-      rules: [],
-      maxSize: 100,
-    } as SourceContainer;
-    this.mapSourceToTree(container1);
-    this.mapSourceToTree(container2);
-    this.containers.push(container1);
-    this.containers.push(container2);
+  @ViewChild(ResourceCollectorDialogComponent)
+  resourceCollectorDialog!: ResourceCollectorDialogComponent;
+  @ViewChild(ManifestDialogComponent) manifestDialog!: ManifestDialogComponent;
+
+  constructor(
+    private route: ActivatedRoute,
+    private messageService: MessageService,
+    private projectService: ProjectClient,
+    private projectDetailService: ProjectDetailClient,
+    private sourceService: SourceClient
+  ) {}
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.projectId = id ?? '';
+    if (id) {
+      this.projectService.getById(id).subscribe(res => {
+        this.project = res;
+      })
+      this.projectDetailService.getProjectDetail(id).subscribe((res) => {
+        this.projectDetail = JSON.parse(res);
+        this.mapSourcesToIgnore();
+      });
+      this.sourceService.getSources(id).subscribe((res) => {
+        this.sources = res;
+        this.mapSourcesToIgnore();
+      });
+    }
+  }
+
+  mapSourcesToIgnore() {
+    if (this.sources.length === 0 || !this.projectDetail) {
+      return;
+    }
+
+    for (const source of this.sources) {
+      let found = false;
+      for (const container of this.projectDetail.sourceContainers) {
+        if (source.url && container.sourceList.includes(source.url)) {
+          found = true;
+        }
+      }
+      if (!found && source.url) {
+        this.projectDetail.sourceContainers[0].sourceList.push(source.url);
+      }
+    }
+
+    for (const container of this.projectDetail.sourceContainers) {
+      this.mapSourceToTree(container);
+    }
   }
 
   mapSourceToTree(sourceContainer: SourceContainer) {
@@ -157,18 +142,21 @@ export class ProjectDetailComponent {
   }
 
   onDrop(event: any, containerToId: number) {
-    const containerFrom = this.containers[event.dragNode.data.containerId];
-    const containerTo = this.containers[containerToId];
+    const containerFrom =
+      this.projectDetail.sourceContainers[event.dragNode.data.containerId];
+    const containerTo = this.projectDetail.sourceContainers[containerToId];
     const startUrl = event.dragNode.data.url;
 
-    containerFrom.sourceList = containerFrom.sourceList.filter((element) => {
-      if (element.startsWith(startUrl)) {
-        containerTo.sourceList.push(element);
-        return false;
-      } else {
-        return true;
-      }
-    });
+    if (containerFrom !== containerTo) {
+      containerFrom.sourceList = containerFrom.sourceList.filter((element) => {
+        if (element.startsWith(startUrl)) {
+          containerTo.sourceList.push(element);
+          return false;
+        } else {
+          return true;
+        }
+      });
+    }
 
     this.mapSourceToTree(containerFrom);
     this.mapSourceToTree(containerTo);
@@ -176,23 +164,24 @@ export class ProjectDetailComponent {
 
   generateServiceWorker() {
     this.mapSourceToRules();
-    // console.log(JSON.stringify(this.containers));
     const codeGenerator = new ServiceWorkerGenerator();
-    codeGenerator.generate(this.containers);
-  //   const zip = new JSZip();
-  //   zip.file("nested/hello.txt", "Hello World\n");
-  //   zip.generateAsync({type:"blob"})
-  //   .then((content) => {
-  //     saveAs(content, "example.zip");
-  // });
+    const sw = codeGenerator.generateSW(this.projectDetail, this.project.name);
 
-
-
+    const zip = new JSZip();
+    zip.file("sw.js", sw);
+    zip.file("sw-attach.js", codeGenerator.generateSWAttach(this.projectDetail));
+    if (this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.OfflineFallbackPage)) {
+      zip.file("fallback.html", codeGenerator.fallbackPage);
+    }
+    zip.generateAsync({type:"blob"})
+    .then((content) => {
+      saveAs(content, "serviceWorker.zip");
+    });
   }
 
   mapSourceToRules() {
-    for (let i = 0; i < this.containers.length; i++) {
-      const element = this.containers[i];
+    for (let i = 1; i < this.projectDetail.sourceContainers.length; i++) {
+      const element = this.projectDetail.sourceContainers[i];
 
       for (const url of element.sourceList) {
         if (element.rules.some((r) => url.startsWith(r))) {
@@ -202,27 +191,27 @@ export class ProjectDetailComponent {
         let currentContainer = 0;
         let index = url.indexOf('/', 8);
         let currentRule = url.substring(0, index);
-        while (currentContainer < this.containers.length) {
+        while (currentContainer < this.projectDetail.sourceContainers.length) {
           if (currentContainer === i) {
             currentContainer++;
             continue;
           }
 
-          const conflictFound = this.containers[
+          const conflictFound = this.projectDetail.sourceContainers[
             currentContainer
           ].sourceList.some((u) => u.startsWith(currentRule));
 
           if (conflictFound) {
             index = url.indexOf('/', index + 1);
             if (index === -1) {
-              currentRule = url;
+              currentRule = url + "$";
               break;
             } else {
               currentRule = url.substring(0, index);
               currentContainer = 0;
             }
           } else {
-            if (currentContainer < this.containers.length) {
+            if (currentContainer < this.projectDetail.sourceContainers.length) {
               currentContainer++;
             } else {
               break;
@@ -235,14 +224,65 @@ export class ProjectDetailComponent {
     }
   }
 
-  showSettingsDialog(container:SourceContainer){
+  showSettingsDialog(container: SourceContainer) {
     this.selectedContainer = container;
-    this.dialogVisible = true;
+    this.settingsDialogVisible = true;
   }
 
-  addNewContainer(){
-    const newContainer = { name: "New Container", cacheStrategy: CacheStrategy.cacheFirst, containerId: this.containers.length, rules: [], sourceList: [], sourceTree: []} as SourceContainer;
-    this.containers.push(newContainer);
+  showAdditionalFeaturesDialog() {
+    this.additionalFeaturesDialogVisible = true;
+  }
+
+  showResourceCollectorDialog() {
+    this.resourceCollectorDialog.dialogVisible = true;
+  }
+
+  showManifestDialog() {
+    this.manifestDialog.dialogVisible = true;
+  }
+
+  addNewContainer() {
+    const newContainer = {
+      name: 'New Container',
+      cacheStrategy: CacheStrategy.cacheFirst,
+      containerId: this.projectDetail.sourceContainers.length,
+      rules: [],
+      sourceList: [],
+      sourceTree: [],
+    } as SourceContainer;
+    this.projectDetail.sourceContainers.push(newContainer);
+  }
+
+  additionalFeaturesIncludesPush(){
+    if (this.projectDetail?.additionalFeatures) {
+      return this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.PushNotification);
+    }else{
+      return false;
+    }
+  }
+
+  saveProjectDetail() {
+    const sourceContainer = [];
+    for (const container of this.projectDetail.sourceContainers) {
+      sourceContainer.push({containerId: container.containerId, name: container.name, cacheStrategy: container.cacheStrategy, sourceList: container.sourceList, rules: [], sourceTree: [], maxSize: container.maxSize })
+    }
+
+    const updateModel = {
+      sourceMapList: this.projectDetail.sourceMapList,
+      sourceContainers: sourceContainer,
+      additionalFeatures: this.projectDetail.additionalFeatures,
+      options: this.projectDetail.options
+    } as ProjectDetail;
+
+    this.projectDetailService.updateProjectDetail({
+      projectId: this.projectId,
+      projectDetail: JSON.stringify(updateModel)
+    } as UpdateProjectDetailModel).subscribe(res =>
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Saved',
+        detail: 'Changes successfully saved',
+      })
+    );
   }
 }
-

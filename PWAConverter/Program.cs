@@ -55,10 +55,10 @@ services.AddAutoMapper(typeof(Program));
 // configure strongly typed settings object
 
 
-builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
+builder.Services.AddCors(options => options.AddPolicy(name: "AcceptAll",
     policy =>
     {
-        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     }));
 
 // configure DI for application services
@@ -84,7 +84,7 @@ if (app.Environment.IsDevelopment())
         options.DocumentPath = "/v1/openapi/pwa-converter.yaml";
     });
 }
-app.UseCors("NgOrigins");
+app.UseCors("AcceptAll");
 
 app.UseHttpsRedirection();
 

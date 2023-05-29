@@ -2,12 +2,14 @@
 <p-confirmPopup></p-confirmPopup>
 
 <div class="p-3 border-1 surface-border surface-card border-round project-card">
+  <a [routerLink]="'/project/' + project.id">
   <div class="flex flex-column align-items-center gap-3 py-2">
     <img class="w-9 shadow-2 border-round"
-      [src]="'https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder-1024x1024.png'"
-      [alt]="'placeholder-1024x1024'" />
-    <div class="text-2xl font-bold card-title">Name</div>
+      [src]="project.icon"
+      alt="project-icon" />
+    <div class="text-2xl font-bold card-title">{{project.name}}</div>
   </div>
+</a>
   <div class="flex align-items-center justify-content-center">
     <button pButton icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom"
       class="p-button-rounded p-button-warning m-1" (click)="showEditDialog()"></button>
@@ -22,6 +24,6 @@
 
 <app-edit-dialog #editDialog></app-edit-dialog>
 
-<app-manifest-dialog #manifestDialog></app-manifest-dialog>
+<app-manifest-dialog #manifestDialog [projectId]="project.id"></app-manifest-dialog>
 
-<app-resource-collector-dialog #resourceCollectorDialog></app-resource-collector-dialog>
+<app-resource-collector-dialog #resourceCollectorDialog [projectId]="project.id"></app-resource-collector-dialog>

@@ -1,9 +1,11 @@
+<p-toast></p-toast>
+
 <div class="flex justify-content-between">
-  <p class="text-4xl m-75">Example Project</p>
+  <p class="text-4xl m-75">{{project.name}}</p>
 
   <span class="p-buttonset m-75">
-    <button pButton icon="pi pi-file" label="Generate Manifest" class="p-button-secondary"></button>
-    <button pButton (click)="addNewContainer()" icon="pi pi-paperclip" label="Generate Resource Collector" class="p-button-secondary"></button>
+    <button pButton (click)="showManifestDialog()" icon="pi pi-file" label="Generate Manifest" class="p-button-secondary"></button>
+    <button pButton (click)="showResourceCollectorDialog()" icon="pi pi-paperclip" label="Generate Resource Collector" class="p-button-secondary"></button>
   </span>
 </div>
 
@@ -16,8 +18,8 @@
 
 <div class="card flex flex-wrap justify-content-start">
 
-  <ng-template ngFor let-item [ngForOf]="containers" let-i="index">
-    <p-card class="w-full md:w-27rem ml-1">
+  <ng-template ngFor let-item [ngForOf]="projectDetail.sourceContainers" let-i="index">
+    <p-card class="w-full md:w-26rem ml-1">
       <div class="w-full text-center line-height-4 py-2">
         <span class="vertical-align-text-top text-2xl">{{item.name}}</span>
         <button pButton icon="pi pi-cog" pTooltip="Settings" tooltipPosition="bottom"
@@ -36,15 +38,15 @@
   </ng-template>
 
 </div>
-<span class="p-buttonset flex justify-content-center my-3">
 
-  <button pButton icon="pi pi-tags" label="Additional Features" class="p-button-warning"></button>
+<span class="p-buttonset flex justify-content-center my-3">
+  <button pButton (click)="showAdditionalFeaturesDialog()" icon="pi pi-tags" label="Additional Features" class="p-button-warning"></button>
   <button pButton (click)="generateServiceWorker()" icon="pi pi-wrench" label="Generate Service Worker"
   class="p-button-help"></button>
-  <button pButton icon="pi pi-save" label="Save Changes" class="p-button-success"></button>
+  <button pButton (click)="saveProjectDetail()" icon="pi pi-save" label="Save Changes" class="p-button-success"></button>
 </span>
 
-<p-dialog header="Settings" [(visible)]="dialogVisible" [modal]="true" [style]="{width: '600px', height: '400px'}">
+<p-dialog header="Settings" [(visible)]="settingsDialogVisible" [modal]="true" [style]="{width: '600px', height: '400px'}">
   <div class="flex justify-content-start flex-wrap" *ngIf="selectedContainer">
 
     <div class="flex flex-column gap-2 mt-3 ml-5">
@@ -72,3 +74,36 @@
     <p-button label="Delete" styleClass="p-button-raised p-button-danger"></p-button>
   </ng-template>
 </p-dialog>
+
+<p-dialog header="Additional Features" [(visible)]="additionalFeaturesDialogVisible" [modal]="true" [style]="{width: '600px', height: '400px'}">
+  <div class="flex justify-content-start flex-wrap flex-column">
+
+    <div class="flex align-items-center gap-1 mt-3">
+      <p-checkbox name="additionalFeatures" value="OfflineFallbackPage" [(ngModel)]="projectDetail.additionalFeatures" inputId="OfflineFallbackPage"></p-checkbox>
+      <label for="OfflineFallbackPage">Offline Fallback Page</label>
+  </div>
+
+  <div class="flex align-items-center gap-1 mt-3">
+    <p-checkbox name="additionalFeatures" value="PushNotification" [(ngModel)]="projectDetail.additionalFeatures" inputId="PushNotification"></p-checkbox>
+    <label for="PushNotification">Push Notification</label>
+</div>
+
+<ng-container *ngIf="additionalFeaturesIncludesPush()">
+<div class="flex flex-column gap-2 mt-3 ml-5">
+  <label htmlFor="server-key">Server Key</label>
+  <input pInputText id="server-key" [(ngModel)]="projectDetail.options.pushNotificationServerKey" />
+</div>
+<div class="flex flex-column gap-2 mt-3 ml-5">
+  <label htmlFor="subscribe-endpoint">Subscribe Endpoint</label>
+  <input pInputText id="subscribe-endpoint" [(ngModel)]="projectDetail.options.pushNotificationSubscribeEndpoint" />
+</div>
+
+</ng-container>
+
+
+  </div>
+</p-dialog>
+
+
+<app-resource-collector-dialog #resourceCollectorDialog [projectId]="projectId"></app-resource-collector-dialog>
+<app-manifest-dialog #manifestDialog [projectId]="projectId" [icon]="project.icon"></app-manifest-dialog>

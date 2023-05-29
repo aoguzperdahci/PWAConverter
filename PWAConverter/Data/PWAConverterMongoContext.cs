@@ -10,7 +10,7 @@ namespace PWAConverter.Data
     {
         private IMongoDatabase _db { get; set; }
         private readonly IConfiguration _configuration;
-        const string connectionUri = "mongodb+srv://pwamongo:pwamongo123@pwaconvertermongo.ebcbq7g.mongodb.net/?retryWrites=true&w=majority";
+        const string connectionUri = "mongodb://localhost:27017";
 
         public PWAConverterMongoContext(IConfiguration configuration)
         {

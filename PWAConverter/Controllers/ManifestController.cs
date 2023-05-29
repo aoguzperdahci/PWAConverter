@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PWAConverter.Data;
 using PWAConverter.Entities;
+using PWAConverter.Helpers;
 using PWAConverter.Models.Manifest;
 using System.Security.Claims;
 
@@ -22,6 +23,7 @@ namespace PWAConverter.Controllers
             _dataContext = dataContext;
             _mapper = mapper;
         }
+
         /// <summary>
         /// Update manifest
         /// </summary>
@@ -34,15 +36,13 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateManifest(UpdateManifestModel model)
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var user = _dataContext.Users.Include("Projects").ToList().Where(x=>x.Id == userId).First();
+            var user = _dataContext.Users.Where(x=>x.Id == HttpContext.GetUserId()).Include(u => u.Projects.Where(p => p.Id == model.ProjectId)).ThenInclude(p => p.Manifest).First();
             if(user == null) { return NotFound(); }
-            Project project = user.Projects.Where(p => p.Id == model.ProjectId).First();
+
+            var project = user.Projects.DefaultIfEmpty(null).SingleOrDefault();
             if (project != null)
             {
-                var manifest = _dataContext.Manifests.ToList().Where(x=>x.Id == model.Id).First();
-                if(manifest== null) { return NotFound(); }
+                var manifest = project.Manifest;
                 manifest.ShortName = model.ShortName;
                 manifest.Description = model.Description;
                 manifest.DisplayMode = model.DisplayMode;
@@ -56,7 +56,33 @@ namespace PWAConverter.Controllers
                 await _dataContext.SaveChangesAsync();
                 return Ok();
             }
+
             return BadRequest();
         }
+
+        /// <summary>
+        /// Get manifest of the project
+        /// </summary>
+        /// <param name="projectId">Project id</param>
+        /// <returns>Manifest</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Manifest))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public IActionResult GetManifestFile(Guid projectId)
+        {
+            var user = _dataContext.Users.Where(x => x.Id == HttpContext.GetUserId()).Include(u => u.Projects.Where(p => p.Id == projectId)).ThenInclude(p => p.Manifest).First();
+            if (user == null) { return NotFound(); }
+
+            var project = user.Projects.DefaultIfEmpty(null).SingleOrDefault();
+            if (project != null)
+            {
+                return Ok(project.Manifest);
+            }
+
+            return BadRequest();
+        }
+
     }
 }

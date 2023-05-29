@@ -5,8 +5,8 @@ namespace PWAConverter.Services.Interfaces
 {
     public interface IIconService
     {
-        public string SaveIcon(BsonDocument icon);
-        public BsonDocument GetIcon(Guid projectId);
-        public byte[] GetImage(string sBase64string);
+        public Task<string> SaveIconAsync(string icon);
+        public Task<string> UpdateIconAsync(BsonDocument icon);
+        public string GetIcon(string iconId);
     }
 }

@@ -18,38 +18,28 @@ namespace PWAConverter.Services.Concrete
             _iconCollection = _mongoContext.GetCollection<BsonDocument>("Icon");
         }
 
-        public BsonDocument GetIcon(Guid projectId)
+        public string GetIcon(string iconId)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("ProjectId", projectId);
-            var document = _iconCollection.Find(filter).FirstOrDefault();
-            return document;
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(iconId));
+            var iconObj = _iconCollection.Find(filter).FirstOrDefault();
+            if (iconObj == null) { return null; }
+            return iconObj["Image"].ToString();
         }
 
-        public string SaveIcon(BsonDocument icon)
+        public async Task<string> SaveIconAsync(string icon)
+        {
+            var document = new BsonDocument("Image", icon);
+            await _iconCollection.InsertOneAsync(document);
+            return document["_id"].ToString();
+        }
+
+        public async Task<string> UpdateIconAsync(BsonDocument icon)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", icon["_id"]);
             var iconObj = _iconCollection.Find(filter).FirstOrDefault();
-            if (iconObj == null)
-            {
-                _iconCollection.InsertOne(iconObj);
-                
-            }
-            else
-            {
-                _iconCollection.ReplaceOne(iconObj, icon);
-            }
+            _iconCollection.ReplaceOne(iconObj, icon);
             return icon["_id"].ToString();
         }
-        public byte[] GetImage(string sBase64string)
-        {
-            byte[] bytes = null;
-            if (!string.IsNullOrEmpty(sBase64string))
-            {
-                bytes = Convert.FromBase64String(sBase64string);
-            }
-            return bytes;
-        }
 
-       
     }
 }

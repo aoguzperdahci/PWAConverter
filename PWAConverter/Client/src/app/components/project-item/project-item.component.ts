@@ -1,9 +1,10 @@
 import { HttpEvent } from '@angular/common/http';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.component';
 import { ResourceCollectorDialogComponent } from '../resource-collector-dialog/resource-collector-dialog.component';
+import { GetProjectResponse } from 'src/OpenApiClient';
 
 @Component({
   selector: 'app-project-item',
@@ -12,10 +13,12 @@ import { ResourceCollectorDialogComponent } from '../resource-collector-dialog/r
   providers: [MessageService, ConfirmationService],
 })
 export class ProjectItemComponent {
-
+  @Input() project!: GetProjectResponse;
   @ViewChild(EditDialogComponent) editDialog!: EditDialogComponent;
   @ViewChild(ManifestDialogComponent) manifestDialog!: ManifestDialogComponent;
-  @ViewChild(ResourceCollectorDialogComponent) resourceCollectorDialog!: ResourceCollectorDialogComponent;
+  @ViewChild(ResourceCollectorDialogComponent)
+  resourceCollectorDialog!: ResourceCollectorDialogComponent;
+  projectIcon = '';
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -50,12 +53,11 @@ export class ProjectItemComponent {
     this.resourceCollectorDialog.dialogVisible = true;
   }
 
-  showEditDialog(){
+  showEditDialog() {
     this.editDialog.dialogVisible = true;
   }
 
-  showManifestDialog(){
+  showManifestDialog() {
     this.manifestDialog.dialogVisible = true;
   }
-
 }

@@ -10,10 +10,10 @@ import { ProjectDetailComponent } from './components/project-detail/project-deta
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'projects', component: ProjectsComponent},
+  {path: 'project/:id', component: ProjectDetailComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'login', component: LoginComponent},
   {path: 'signup', component: SignupComponent},
-  {path: 'project', component: ProjectDetailComponent},
 ];
 
 @NgModule({
