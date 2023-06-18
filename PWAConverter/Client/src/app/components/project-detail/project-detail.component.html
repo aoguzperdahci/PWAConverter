@@ -83,6 +83,15 @@
       <label for="OfflineFallbackPage">Offline Fallback Page</label>
   </div>
 
+  <ng-container *ngIf="additionalFeaturesIncludesFallback()">
+    <div class="flex flex-column mt-2">
+      <div *ngFor="let option of fallbackPageOptions" class="field-checkbox">
+          <p-radioButton [inputId]="option" name="fallback-page" [value]="option" [(ngModel)]="projectDetail.options.fallbackPage"></p-radioButton>
+          <label [for]="option" class="ml-2">{{ option }}</label>
+      </div>
+  </div>
+
+  </ng-container>
   <div class="flex align-items-center gap-1 mt-3">
     <p-checkbox name="additionalFeatures" value="PushNotification" [(ngModel)]="projectDetail.additionalFeatures" inputId="PushNotification"></p-checkbox>
     <label for="PushNotification">Push Notification</label>

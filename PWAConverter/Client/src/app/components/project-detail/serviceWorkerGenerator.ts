@@ -41,7 +41,12 @@ export class ServiceWorkerGenerator {
         (feature) => feature === AdditionalFeatures.OfflineFallbackPage
       )
     ) {
-      preCache.unshift('/fallback.html');
+      if (projectDetail.options.fallbackPage === "index.html") {
+        preCache.unshift('/index.html');
+      }else{
+        preCache.unshift('/fallback.html');
+      }
+
       template = template.replace(
         '%fetchNetwork%',
         this.templateFetchNetworkWithFallback

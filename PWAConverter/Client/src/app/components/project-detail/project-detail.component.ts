@@ -40,6 +40,7 @@ export class ProjectDetailComponent implements OnInit {
     CacheStrategy.preCache,
     CacheStrategy.ignore,
   ];
+  fallbackPageOptions = ["fallback.html", "index.html"]
 
   @ViewChild(ResourceCollectorDialogComponent)
   resourceCollectorDialog!: ResourceCollectorDialogComponent;
@@ -170,7 +171,7 @@ export class ProjectDetailComponent implements OnInit {
     const zip = new JSZip();
     zip.file("sw.js", sw);
     zip.file("sw-attach.js", codeGenerator.generateSWAttach(this.projectDetail));
-    if (this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.OfflineFallbackPage)) {
+    if (this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.OfflineFallbackPage) && this.projectDetail.options.fallbackPage !== "index.html") {
       zip.file("fallback.html", codeGenerator.fallbackPage);
     }
     zip.generateAsync({type:"blob"})
@@ -260,6 +261,15 @@ export class ProjectDetailComponent implements OnInit {
       return false;
     }
   }
+
+  additionalFeaturesIncludesFallback(){
+    if (this.projectDetail?.additionalFeatures) {
+      return this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.OfflineFallbackPage);
+    }else{
+      return false;
+    }
+  }
+
 
   saveProjectDetail() {
     const sourceContainer = [];
