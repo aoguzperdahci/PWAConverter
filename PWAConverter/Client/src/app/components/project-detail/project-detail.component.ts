@@ -19,6 +19,7 @@ import { ProjectDetail } from 'src/app/models/projectDetail';
 import { ResourceCollectorDialogComponent } from '../resource-collector-dialog/resource-collector-dialog.component';
 import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.component';
 import { AdditionalFeatures } from 'src/app/models/additionalFeatures';
+import { SourceMap } from 'src/app/models/sourceMap';
 
 @Component({
   selector: 'app-project-detail',
@@ -64,12 +65,29 @@ export class ProjectDetailComponent implements OnInit {
       this.projectDetailService.getProjectDetail(id).subscribe((res) => {
         this.projectDetail = JSON.parse(res);
         this.mapSourcesToIgnore();
+        this.mapSourceToListOfSource();
       });
       this.sourceService.getSources(id).subscribe((res) => {
         this.sources = res;
         this.mapSourcesToIgnore();
+        this.mapSourceToListOfSource();
       });
     }
+  }
+
+  mapSourceToListOfSource(){
+    if (this.sources.length === 0 || !this.projectDetail) {
+      return;
+    }
+
+    for (const source of this.sources) {
+      const index = source.url?.indexOf('/', 8);
+      const url = source.url?.slice(0, index);
+      if (!this.projectDetail.sourceMapList.some(m => m.target === url)) {
+        this.projectDetail.sourceMapList.push({target: url, mapTo: url} as SourceMap);
+      }
+    }
+
   }
 
   mapSourcesToIgnore() {
@@ -254,6 +272,21 @@ export class ProjectDetailComponent implements OnInit {
     this.projectDetail.sourceContainers.push(newContainer);
   }
 
+  deleteContainer(){
+    if (this.selectedContainer?.sourceList) {
+      this.projectDetail.sourceContainers[0].sourceList =  this.projectDetail.sourceContainers[0].sourceList.concat(this.selectedContainer?.sourceList);
+    }
+
+    if (this.selectedContainer?.containerId) {
+      this.projectDetail.sourceContainers.splice(this.selectedContainer?.containerId, 1);
+      for (let i = this.selectedContainer?.containerId; i < this.projectDetail.sourceContainers.length; i++) {
+        this.projectDetail.sourceContainers[i].containerId = i - 1;
+      }
+    }
+
+    this.mapSourceToTree(this.projectDetail.sourceContainers[0]);
+  }
+
   additionalFeaturesIncludesPush(){
     if (this.projectDetail?.additionalFeatures) {
       return this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.PushNotification);
@@ -265,6 +298,14 @@ export class ProjectDetailComponent implements OnInit {
   additionalFeaturesIncludesFallback(){
     if (this.projectDetail?.additionalFeatures) {
       return this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.OfflineFallbackPage);
+    }else{
+      return false;
+    }
+  }
+
+  additionalFeaturesIncludesSourceMap(){
+    if (this.projectDetail?.additionalFeatures) {
+      return this.projectDetail.additionalFeatures.some(feature => feature === AdditionalFeatures.SourceMap);
     }else{
       return false;
     }

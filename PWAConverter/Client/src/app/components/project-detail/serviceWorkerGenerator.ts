@@ -60,10 +60,31 @@ export class ServiceWorkerGenerator {
       '%dynamicCaches%',
       JSON.stringify(dynamicCaches)
     );
+
+    if (
+      projectDetail.additionalFeatures.some(
+        (feature) => feature === AdditionalFeatures.SourceMap
+      )
+    ) {
+      for (const sourceMap of projectDetail.sourceMapList) {
+        template = template.replaceAll(sourceMap.target, sourceMap.mapTo);
+      }
+    }
+
     template = template.replace(/\//g, '\\/');
     template = template.replace(/"%/g, '/');
     template = template.replace(/%"/g, '/');
     template = template.replace('%preCache%', JSON.stringify(preCache));
+
+    if (
+      projectDetail.additionalFeatures.some(
+        (feature) => feature === AdditionalFeatures.SourceMap
+      )
+    ) {
+      for (const sourceMap of projectDetail.sourceMapList) {
+        template = template.replaceAll(sourceMap.target, sourceMap.mapTo);
+      }
+    }
 
     if (
       projectDetail.additionalFeatures.some(

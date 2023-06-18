@@ -1,4 +1,5 @@
 export enum AdditionalFeatures {
   OfflineFallbackPage = "OfflineFallbackPage",
-  PushNotification = "PushNotification"
+  PushNotification = "PushNotification",
+  SourceMap = "SourceMap"
 }
