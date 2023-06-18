@@ -4,7 +4,7 @@ import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 import { ManifestDialogComponent } from '../manifest-dialog/manifest-dialog.component';
 import { ResourceCollectorDialogComponent } from '../resource-collector-dialog/resource-collector-dialog.component';
-import { GetProjectResponse } from 'src/OpenApiClient';
+import { GetProjectResponse, ProjectClient } from 'src/OpenApiClient';
 
 @Component({
   selector: 'app-project-item',
@@ -22,7 +22,8 @@ export class ProjectItemComponent {
 
   constructor(
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private projectService: ProjectClient
   ) {}
 
   confirmDelete(event: Event) {
@@ -32,11 +33,13 @@ export class ProjectItemComponent {
         message: 'Are you sure that you want to delete?',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Confirmed',
-            detail: 'Project deleted',
-          });
+          this.projectService.delete(this.project.id).subscribe(res => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Confirmed',
+              detail: 'Project deleted',
+            });
+          })
         },
         reject: () => {
           this.messageService.add({
