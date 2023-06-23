@@ -1,0 +1,77 @@
+<p-toast></p-toast>
+
+<p-dialog header="Manifest" [(visible)]="dialogVisible" [modal]="true" [style]="{width: '700px'}">
+
+  <p-tabView>
+    <p-tabPanel header="Generate Manifest">
+
+      <div class="flex flex-column gap-2">
+        <label htmlFor="short-name">Short Name</label>
+        <input pInputText id="short-name" aria-describedby="short-name-help" [(ngModel)]="manifest.shortName" />
+      </div>
+
+      <div class="flex flex-column gap-2 mt-3">
+        <label htmlFor="description">Description</label>
+        <input pInputText id="description" aria-describedby="description-help" [(ngModel)]="manifest.description" />
+      </div>
+
+
+      <div class="flex gap-2 mt-3">
+        <div class="flex flex-column gap-2 w-6">
+          <label htmlFor="display-mode">Display Mode</label>
+          <p-dropdown id="display-mode" [options]="displayModeOptions" [(ngModel)]="displayMode"
+            aria-describedby="display-mode-help"></p-dropdown>
+        </div>
+
+        <div class="flex flex-column gap-2 w-6">
+          <label htmlFor="orientation">Orientation</label>
+          <p-dropdown id="orientation" [options]="orientationOptions" [(ngModel)]="orientation"
+            aria-describedby="orientation-help"></p-dropdown>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-3">
+        <div class="flex flex-column gap-2 w-6">
+          <label htmlFor="background-color">Background Color</label>
+          <p-colorPicker id="background-color" [(ngModel)]="manifest.backGroundColor"
+            aria-describedby="background-color-help"></p-colorPicker>
+        </div>
+
+        <div class="flex flex-column gap-2 w-6">
+          <label htmlFor="theme-color">Theme Color</label>
+          <p-colorPicker id="theme-color" [(ngModel)]="manifest.themeColor"
+            aria-describedby="theme-color-help"></p-colorPicker>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-3">
+        <div class="flex flex-column gap-2 w-6">
+          <label htmlFor="start-url">Start Url</label>
+          <input pInputText id="start-url" aria-describedby="start-url-help" [(ngModel)]="manifest.startUrl" />
+        </div>
+
+        <div class="flex flex-column gap-2 w-6">
+          <label htmlFor="scope">Scope</label>
+          <input pInputText id="scope" aria-describedby="scope-help" [(ngModel)]="manifest.scope" />
+        </div>
+      </div>
+
+      <button pButton (click)="generateManifest()" label="Save & Generate Manifest" class="w-full mt-4"></button>
+
+    </p-tabPanel>
+    <p-tabPanel header="Apply Manifest">
+      <p>Copy generated files as static files to your application. Then copy and paste the codes below to the head
+        section of your
+        "index.html" file. If there are already similar codes, you can remove them.</p>
+
+      <p-divider></p-divider>
+      <div *ngFor="let item of manifestScript()">
+        <p>{{item}}</p>
+      </div>
+      <p-divider></p-divider>
+
+      <p>After that, you can start your application and the browser will detect the manifest.</p>
+    </p-tabPanel>
+  </p-tabView>
+
+</p-dialog>

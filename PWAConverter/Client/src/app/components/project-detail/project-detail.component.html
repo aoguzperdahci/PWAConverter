@@ -1,0 +1,148 @@
+<p-toast></p-toast>
+
+<div class="flex justify-content-between">
+  <p class="text-4xl m-75">{{project.name}}</p>
+
+  <span class="p-buttonset m-75">
+    <button pButton (click)="showManifestDialog()" icon="pi pi-file" label="Generate Manifest"
+      class="p-button-secondary"></button>
+    <button pButton (click)="showResourceCollectorDialog()" icon="pi pi-paperclip" label="Generate Resource Collector"
+      class="p-button-secondary"></button>
+  </span>
+</div>
+
+<div class="flex justify-content-between">
+  <p class="text-2xl m-75">Cache Containers:</p>
+
+  <button pButton (click)="addNewContainer()" icon="pi pi-plus" label="New Container" class="m-75"></button>
+</div>
+
+
+<div class="card flex flex-wrap justify-content-start">
+
+  <ng-template ngFor let-item [ngForOf]="projectDetail.sourceContainers" let-i="index">
+    <p-card class="w-full md:w-26rem ml-1">
+      <div class="w-full text-center line-height-4 py-2">
+        <span class="vertical-align-text-top text-2xl">{{item.name}}</span>
+        <button pButton icon="pi pi-cog" pTooltip="Settings" tooltipPosition="bottom"
+          class="p-button-rounded p-button-secondary p-button-text ml-1" (click)="showSettingsDialog(item)"></button>
+      </div>
+
+      <p-tree class="w-full" [styleClass]="'h-30rem'" [scrollHeight]="'458px'" [value]="item.sourceTree"
+        [draggableNodes]="true" [droppableNodes]="true" draggableScope="all" droppableScope="all"
+        (onNodeDrop)="onDrop($event,i)">
+        <ng-template let-node pTemplate="default">
+          <p>{{node.label}}</p>
+        </ng-template>
+      </p-tree>
+
+    </p-card>
+  </ng-template>
+
+</div>
+
+<span class="p-buttonset flex justify-content-center my-3">
+  <button pButton (click)="showAdditionalFeaturesDialog()" icon="pi pi-tags" label="Additional Features"
+    class="p-button-warning"></button>
+  <button pButton (click)="generateServiceWorker()" icon="pi pi-wrench" label="Generate Service Worker"
+    class="p-button-help"></button>
+  <button pButton (click)="saveProjectDetail()" icon="pi pi-save" label="Save Changes"
+    class="p-button-success"></button>
+</span>
+
+<p-dialog header="Settings" [(visible)]="settingsDialogVisible" [modal]="true"
+  [style]="{width: '600px', height: '400px'}">
+  <div class="flex justify-content-start flex-wrap" *ngIf="selectedContainer">
+
+    <div class="flex flex-column gap-2 mt-3 ml-5">
+      <label htmlFor="container-name">Container Name</label>
+      <input pInputText id="container-name" [(ngModel)]="selectedContainer.name" />
+    </div>
+
+    <div class="flex gap-2 mt-3 ml-7">
+      <div class="flex flex-column gap-2">
+        <label htmlFor="cache-strategy">Cache Strategy</label>
+        <p-dropdown id="cache-strategy" [options]="cacheOptions"
+          [(ngModel)]="selectedContainer.cacheStrategy"></p-dropdown>
+      </div>
+    </div>
+
+    <div class="flex flex-column gap-2 mt-3 ml-5" *ngIf="selectedContainer.cacheStrategy === cacheOptions[1]">
+      <label htmlFor="max-size">Max Size</label>
+      <p-inputNumber id="max-size" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="1000"
+        [(ngModel)]="selectedContainer.maxSize" />
+    </div>
+
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="deleteContainer()" label="Delete" styleClass="p-button-raised p-button-danger"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="Additional Features" [(visible)]="additionalFeaturesDialogVisible" [modal]="true"
+  [style]="{width: '600px', height: '600px'}">
+  <div class="flex justify-content-start flex-wrap flex-column">
+
+    <div class="flex align-items-center gap-1 mt-3">
+      <p-checkbox name="additionalFeatures" value="OfflineFallbackPage" [(ngModel)]="projectDetail.additionalFeatures"
+        inputId="OfflineFallbackPage"></p-checkbox>
+      <label for="OfflineFallbackPage">Offline Fallback Page</label>
+    </div>
+
+    <ng-container *ngIf="additionalFeaturesIncludesFallback()">
+      <div class="flex flex-column mt-2">
+        <div *ngFor="let option of fallbackPageOptions" class="field-checkbox">
+          <p-radioButton [inputId]="option" name="fallback-page" [value]="option"
+            [(ngModel)]="projectDetail.options.fallbackPage"></p-radioButton>
+          <label [for]="option" class="ml-2">{{ option }}</label>
+        </div>
+      </div>
+
+    </ng-container>
+    <div class="flex align-items-center gap-1 mt-3">
+      <p-checkbox name="additionalFeatures" value="PushNotification" [(ngModel)]="projectDetail.additionalFeatures"
+        inputId="PushNotification"></p-checkbox>
+      <label for="PushNotification">Push Notification</label>
+    </div>
+
+    <ng-container *ngIf="additionalFeaturesIncludesPush()">
+      <div class="flex flex-column gap-2 mt-3 ml-5">
+        <label htmlFor="server-key">Server Key</label>
+        <input pInputText id="server-key" [(ngModel)]="projectDetail.options.pushNotificationServerKey" />
+      </div>
+      <div class="flex flex-column gap-2 mt-3 ml-5">
+        <label htmlFor="subscribe-endpoint">Subscribe Endpoint</label>
+        <input pInputText id="subscribe-endpoint"
+          [(ngModel)]="projectDetail.options.pushNotificationSubscribeEndpoint" />
+      </div>
+    </ng-container>
+
+    <div class="flex align-items-center gap-1 mt-3">
+      <p-checkbox name="additionalFeatures" value="SourceMap" [(ngModel)]="projectDetail.additionalFeatures"
+        inputId="SourceMap"></p-checkbox>
+      <label for="SourceMap">Source Map</label>
+    </div>
+
+    <ng-container *ngIf="additionalFeaturesIncludesSourceMap()">
+      <div *ngFor="let map of projectDetail.sourceMapList">
+        <div class="flex flex-row gap-1">
+          <div class="w-6 flex flex-column">
+            <label>From:</label>
+            <input pInputText [(ngModel)]="map.target" />
+          </div>
+          <div class="w-6 flex flex-column">
+            <label>To:</label>
+            <input pInputText [(ngModel)]="map.mapTo" />
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+</p-dialog>
+
+
+<app-resource-collector-dialog #resourceCollectorDialog [projectId]="projectId"></app-resource-collector-dialog>
+<app-manifest-dialog #manifestDialog [projectId]="projectId" [icon]="project.icon"></app-manifest-dialog>

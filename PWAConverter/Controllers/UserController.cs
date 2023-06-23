@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PWAConverter.Data;
 using PWAConverter.Entities;
+using PWAConverter.Helpers;
 using PWAConverter.Models.User;
 using PWAConverter.Services.Interfaces;
 using System.Security.Claims;
@@ -32,9 +33,7 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUser()
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var user = await _userService.GetByIdAsync(userId);
+            var user = await _userService.GetByIdAsync(HttpContext.GetUserId());
 
             if (user == null)
             {
@@ -57,9 +56,7 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteUser()
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var isSuccessful = await _userService.DeleteAsync(userId);
+            var isSuccessful = await _userService.DeleteAsync(HttpContext.GetUserId());
 
             if (isSuccessful)
             {
@@ -82,9 +79,7 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordRequest model)
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var isSuccessful = await _userService.UpdatePasswordAsync(userId, model);
+            var isSuccessful = await _userService.UpdatePasswordAsync(HttpContext.GetUserId(), model);
 
             if (isSuccessful)
             {
@@ -107,9 +102,7 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateEmail(UpdateEmailRequest model)
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var isSuccessful = await _userService.UpdateEmailAsync(userId, model);
+            var isSuccessful = await _userService.UpdateEmailAsync(HttpContext.GetUserId(), model);
 
             if (isSuccessful)
             {
@@ -131,10 +124,7 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetProjectList()
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var user = _userService.GetByIdAsync(userId);
-            
+            var user = _userService.GetByIdAsync(HttpContext.GetUserId());
             return Ok(user.Result.Projects);
         }
 

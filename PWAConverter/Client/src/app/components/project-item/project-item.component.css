@@ -1,0 +1,48 @@
+.project-card:hover {
+  border-color: var(--surface-600) !important;
+}
+
+.project-card:hover .card-title {
+  text-decoration: underline;
+}
+
+.icon-container {
+  position: relative;
+}
+
+.icon-image {
+  width: 100%;
+  height: auto;
+}
+
+.icon-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .3s ease;
+  background-color: var(--surface-600);
+}
+
+.icon-container:hover .icon-overlay {
+  opacity: 0.8;
+}
+
+.icon-upload {
+  color: var(--surface-0);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+a{
+  text-decoration: none;
+  color: black;
+}

@@ -4,7 +4,6 @@ namespace PWAConverter.Models.Manifest
 {
     public class UpdateManifestModel
     {
-        public Guid Id { get; set; }
         public string ShortName { get; set; }
         public string Description { get; set; }
         public DisplayMode DisplayMode { get; set; }

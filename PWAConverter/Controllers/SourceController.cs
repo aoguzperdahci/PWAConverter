@@ -4,15 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PWAConverter.Data;
 using PWAConverter.Entities;
+using PWAConverter.Helpers;
 using PWAConverter.Models.Source;
 using System.Security.Claims;
 
 namespace PWAConverter.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class SourceController:ControllerBase
+    public class SourceController : ControllerBase
     {
         private PWAConverterContext _dataContext;
         private readonly IMapper _mapper;
@@ -34,26 +34,35 @@ namespace PWAConverter.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateAsync(CreateSourceModel model)
         {
-            var claim = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.Actor);
-            var userId = Guid.Parse(claim.Value);
-            var user = _dataContext.Users.Include("Projects").ToList().Where(x => x.Id == userId).First();
-            if (user == null) { return NotFound(); }
-            Project project = user.Projects.Where(p => p.Id == model.ProjectId).First();
-            if (project != null)
+            var project = _dataContext.Projects.Include(p => p.Sources).Where(p => p.Id == model.ProjectId).First();
+            if (project == null) { return NotFound(); }
+            if (project.Sources.Any(y => y.Url == model.Url && y.Method == model.Method))
             {
-                var sources = _dataContext.Sources.ToList();
-                if (sources.Any(y => y.Url == model.Url && y.Method == model.Method))
-                {
-                    return BadRequest();
-                }
-                Source source = new Source { Project= project, Method= model.Method, Url=model.Url };
-               
-                await _dataContext.Sources.AddAsync(source);
-                await _dataContext.SaveChangesAsync();
-                return StatusCode(201);
+                return BadRequest();
             }
-            return BadRequest();
+            Source source = new Source { Project = project, Method = model.Method, Url = model.Url };
+
+            await _dataContext.Sources.AddAsync(source);
+            await _dataContext.SaveChangesAsync();
+            return StatusCode(201);
         }
 
+        /// <summary>
+        /// Get the source list of project
+        /// </summary>
+        /// <param name="projectId">Project id</param>
+        /// <returns>Source List</returns>
+        [HttpGet("getSources")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GetSourceResponse>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public IActionResult GetSources(Guid projectId)
+        {
+            var user = _dataContext.Users.Where(u => u.Id == HttpContext.GetUserId()).Include(u => u.Projects.Where(p => p.Id == projectId)).ThenInclude(p => p.Sources).First();
+            if (user == null) { return NotFound(); }
+            var r = user.Projects.SelectMany(p => p.Sources.Select(s => new GetSourceResponse { Id = s.Id, Method = s.Method, Url = s.Url })).ToList();
+            return Ok(r);
+        }
     }
 }

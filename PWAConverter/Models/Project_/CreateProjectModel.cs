@@ -7,7 +7,8 @@ namespace PWAConverter.Models.Project_
     public class CreateProjectModel
     {
         public string Name { get; set; }
-        public IFormFile File { get; set; }
+        public string File { get; set; }
+        public string ProjectDetail { get; set; }
 
     }
 }

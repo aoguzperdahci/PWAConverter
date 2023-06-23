@@ -1,0 +1,20 @@
+<p-dialog header="Resource Collector" [(visible)]="dialogVisible" [modal]="true" [style]="{width: '700px'}">
+
+  <p-tabView>
+    <p-tabPanel header="Generate Resource Collector">
+      <button pButton (click)="generateCollector()" label="Generate Resource Collector" class="w-full mt-4"></button>
+    </p-tabPanel>
+
+    <p-tabPanel header="Attach Resource Collector">
+      <p>Copy generated files as static files to your application. Then copy and paste the code below to the head section of your
+        "index.html" file.</p>
+
+      <p-divider></p-divider>
+      <p>{{attachScript}}</p>
+      <p-divider></p-divider>
+
+      <p>After that, you can start your application. While you are using the application, resource collector will record the resources your application demands.</p>
+    </p-tabPanel>
+  </p-tabView>
+
+</p-dialog>

@@ -6,6 +6,6 @@
         public string Name { get; set; }
         public string IconId { get; set; }
         public string ProjectDetailId { get; set; }
-        public IFormFile File { get; set; }
+        public string Icon { get; set; }
     }
 }
